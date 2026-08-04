@@ -67,7 +67,7 @@ function AlterIcal(comp) {
     const vevents = comp.getAllSubcomponents("vevent");
 
     // tar bort första händelsen
-    comp.removeSubcomponent(vevents[1]);
+    comp.removeSubcomponent(vevents[0]);
 
     // ny kalender
     const newIcs = comp.toString();
