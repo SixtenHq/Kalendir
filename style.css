@@ -12,6 +12,10 @@ body {
     border-radius: 15px;
 }
 
-#newIcalLink {
+#CalSorceTextfield {
     width: 700px;
+}
+
+#calendar {
+    height: 1300px;
 }
