@@ -1,6 +1,6 @@
 export async function onRequest(context) {
 
-    const result = await context.env.DB
+    const result = await context.env.dattabas
         .prepare("SELECT * FROM calendar")
         .all();
 
