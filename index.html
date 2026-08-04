@@ -13,20 +13,22 @@
 <body>
 
     <div class="box">
-        <h1 id="title">Hello World!</h1>
 
-        <p>
-            Detta är min första hemsida med HTML, CSS och JavaScript.
-        </p>
+        <h2>Kalendir</h2>
+         Välkomen till din nya fina kalender!<br><br>
 
-        <button onclick="changeText()">
-            Klicka här
-        </button>
+        <label for="newIcal">TimeEdit iCal länk:</label>
+        <input type="text" id="newIcalLink" value="https://cloud.timeedit.net/liu/web/schema/ri67Z146X55Z09Q6Z56g2Y00y6026Y02n00gQY6Q537610Q13.ics">
+        <button id="addNewIcal">Lägg till kalender</button><br><br>
+
+        <div id="calendar"></div>
+
     </div>
 
 
     <!-- Kopplar in JavaScript-filen -->
-
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script type="module" src="script.js"></script>
 </body>
 </html>
