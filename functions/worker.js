@@ -15,5 +15,21 @@ export async function onRequest(context) {
         return new Response("Kalender sparad");
     }
 
+    if (context.request.method === "GET") {
+        const result = await db.prepare(
+            "SELECT ics FROM calendar WHERE id = 1"
+        )
+        .first();
+
+
+        return new Response(
+            result?.ics ?? "Ingen kalender finns",
+            {
+                headers: {
+                    "Content-Type": "text/calendar"
+                }
+            }
+        );
+    }
 
 }
