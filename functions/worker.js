@@ -1,8 +1,19 @@
 export async function onRequest(context) {
 
-    const result = await context.env.dattabas
-        .prepare("SELECT * FROM calendar")
-        .all();
+    const db = context.env.dattabas;
 
-    return Response.json(result);
+    if (context.request.method === "POST") {
+
+        const ics = await context.request.text();
+
+        await db.prepare(
+            "INSERT OR REPLACE INTO calendar (id, ics) VALUES (1, ?)"
+        )
+        .bind(ics)
+        .run();
+
+        return new Response("Kalender sparad");
+    }
+
+
 }

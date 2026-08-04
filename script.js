@@ -71,9 +71,20 @@ function AlterIcal(comp) {
 
     // ny kalender
     const newIcs = comp.toString();
+    saveCalendar(newIcs);
 
-    console.log(newIcs);
+}
 
+async function saveCalendar(icsText) {
+
+    const response = await fetch("/worker", {
+        method: "POST",
+        body: icsText
+    });
+
+    const result = await response.text();
+
+    console.log(result);
 }
 
 
