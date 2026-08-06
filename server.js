@@ -6,7 +6,7 @@ import { cal } from "./script.js";
     var id = crypto.randomUUID();
 
     var data = JSON.stringify({
-        iCal: Cal,
+        iCal: cal,
         id: id
     })
 
