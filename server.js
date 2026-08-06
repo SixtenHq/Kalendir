@@ -1,12 +1,15 @@
+import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
 import { cal } from "./script.js";
 
 
  export async function uploadCal() {
     console.log("uppload start");
+    var iCal =  new ICAL.Component(cal).toString();
     var id = crypto.randomUUID();
+    if (!iCal) console.log("SDASVBAOUFVUVFVEUFVUEAVFJDKASFDYSFAD")
 
     var data = JSON.stringify({
-        iCal: cal,
+        iCal: iCal,
         id: id
     })
 
