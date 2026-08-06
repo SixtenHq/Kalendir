@@ -3,11 +3,10 @@ import { cal } from "./script.js";
 
  export async function uploadCal() {
     console.log("uppload start");
-    var iCal = cal.icsText;
     var id = crypto.randomUUID();
 
     var data = JSON.stringify({
-        iCal: iCal,
+        iCal: Cal,
         id: id
     })
 
