@@ -12,7 +12,7 @@ import { cal } from "./script.js";
     })
 
 
-    const response = await fetch("/worker", {
+    const response = await fetch("/onPageWorker", {
         method: "POST",
         body: data
     });
