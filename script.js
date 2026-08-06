@@ -1,36 +1,13 @@
 import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
+import { reloadCourseList, addToCalView } from "./front.js";
 
-let calendar;
-let courseCodeToName;
 
-// skapa kalendervisning
-function createCalendar() {
-    calendar = new FullCalendar.Calendar(
-        document.getElementById("calendar"),
-        {
-            initialView: "timeGridWeek",
-
-            eventClick: function(info) {
-
-                if (info.event.extendedProps.selected) {
-                    info.event.setProp("backgroundColor", "");
-                    info.event.setProp("borderColor", "");
-                
-                    info.event.setExtendedProp("selected", false);
-                } else {
-                    info.event.setProp("backgroundColor", "gray");
-                    info.event.setProp("borderColor", "gray");
-                
-                    info.event.setExtendedProp("selected", true);
-                }
-            
-            }           
-        }
-    );
-
-    calendar.render();
-}
-
+export let savedCourses = {};
+let CalSorces = [];
+export let cal;
+// code:
+//      name: 
+//      customName: 
 
 async function loadCalFromSorce() {
     console.log("loadCalFromSorce")
@@ -39,15 +16,25 @@ async function loadCalFromSorce() {
         console.log("fel sorce link!");
         return;
     }
+    if (CalSorces.includes(CalSorceLink)) {
+        console.log("redan inlagd");
+        return;
+    }
+    CalSorces.push(CalSorceLink);
 
     //hämta och skriv om Ical till lästligt format
     const response = await fetch(CalSorceLink);
     const data = await response.text();
-    const jcalData = ICAL.parse(data);
-    const comps = new ICAL.Component(jcalData);
-    const events = comps.getAllSubcomponents("vevent");
+    cal = ICAL.parse(data);
+    updateCal();
+    
+}
 
+export function updateCal() {
+    const comps = new ICAL.Component(cal);
+    const events = comps.getAllSubcomponents("vevent");
     format(events);
+    reloadCourseList();
     addToCalView(events);
 }
 
@@ -55,54 +42,64 @@ function format(events) {
 
     for (var e of events) {
         const event = new ICAL.Event(e);
-        event.description = event.summary + "\n" + event.description;
+        if (!isEdited(event)) {
+            event.description = "Orginal title: " + event.summary + "\n" + event.description;
+        }
         event.summary = formatSummary(event);
     }
 }
 
 function formatSummary(event) {
-    var summaryParts = event.summary.split(", ");
     var descriptionParts = event.description.split("\n");
+    let summaryParts;
+    if (isEdited(event)) {
+        summaryParts = descriptionParts[0].slice(15).split(", ");
+    } else {
+        summaryParts = event.summary.split(", ");
+    }
     
-    var course = "";
+    
+    var courseName = "";
     var type = "";
 
     var i = 0;
     for (const part of descriptionParts) {
         if (part.startsWith("Kurs: ")) {
-            summaryParts[i] 
-            course = part.slice(6).trim();
+            courseName = part.slice(6).trim();
+            
+            var courseCode = summaryParts[i];
+            var savedCourse = savedCourses[courseCode]
+
+            if (savedCourse && savedCourse.customName) {
+                courseName = savedCourse.customName;
+            } else if (savedCourse) {
+                courseName = savedCourse.name;
+            } else {
+                savedCourses[courseCode] = {
+                    name: courseName
+                };
+            }
+            i++;
+
         }else if (part.startsWith("Undervisningstyp: ")) {
             type = part.slice(17).trim();
         }
     }
 
-    if (course != "" && type != "") {
-        return course + " " + type;
+    if (courseName != "" && type != "") {
+        return courseName + " " + type;
     } else {
         console.log("faild to make summary");
+        console.log(savedCourses);
         return event.summary
     }
         
 }
 
-
-
-function addToCalView(events) {
-    for (var e of events) {
-        const event = new ICAL.Event(e);
-
-        calendar.addEvent({
-            title: event.summary,
-            start: event.startDate.toJSDate(),
-            end: event.endDate.toJSDate(),
-            extendedProps: {
-                originalEvent: event
-            }
-        });
-
-    }
+function isEdited(event) {
+    return event.description.startsWith("Orginal title: ");
 }
+
 
 async function sendIcalToServer(icsText) {
 
@@ -119,17 +116,5 @@ async function sendIcalToServer(icsText) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    createCalendar();
     document.getElementById("LoadCalBtn").addEventListener("click", loadCalFromSorce);
-    document.getElementById("testBtn").addEventListener("click", test);
 });
-
-async function test() {
-    const response = await fetch("https://liutentor.lukasabbe.com/api/courses/TDDE35");
-
-    const data = await response.json();
-
-    console.log(data);
-
-}
-//https://cloud.timeedit.net/liu/web/schema/ri67Z146X55Z09Q6Z56g2Y00y6026Y02n00gQY6Q537610Q13.ics

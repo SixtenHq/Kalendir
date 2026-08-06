@@ -5,7 +5,7 @@ body {
 
 .box {
     background-color: white;
-    width: 1000px;
+    width: 80%;
     margin: 100px auto;
     padding: 30px;
     text-align: center;
@@ -17,5 +17,20 @@ body {
 }
 
 #calendar {
-    height: 1300px;
+    height: 1010px;
+}
+
+.kursRuta {
+    width: 30%;
+}
+
+.lableSize {
+    width: 30%;
+}
+
+.courseRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
 }
