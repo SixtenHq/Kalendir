@@ -16,7 +16,7 @@ export async function onRequest(context) {
             return new Response("Kalender sparad");
         }
     
-        if (context.request.method === "GET") {
+        /*if (context.request.method === "GET") {
             const calendar = await database
                 .prepare("SELECT ics FROM calendar WHERE id = 1")
                 .first();
@@ -30,10 +30,10 @@ export async function onRequest(context) {
                     "Content-Type": "text/calendar"
                 }
             });
-        }
+        }*/
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
 
         return new Response(error.stack, {
             status: 500

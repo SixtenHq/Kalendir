@@ -6,12 +6,16 @@ import { cal } from "./script.js";
     console.log("uppload start");
     var iCal =  new ICAL.Component(cal).toString();
     var id = crypto.randomUUID();
-    if (!iCal) console.log("SDASVBAOUFVUVFVEUFVUEAVFJDKASFDYSFAD")
+    if (!iCal) console.error("iCal NULL")
 
     var data = JSON.stringify({
         iCal: iCal,
         id: id
     })
+
+    const url = new URL("https://kalendir.pages.dev/worker");
+    url.searchParams.set("id", id);
+    console.log(url.toString());
 
 
     const response = await fetch("/onPageWorker", {

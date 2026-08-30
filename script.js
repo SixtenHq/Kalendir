@@ -3,11 +3,13 @@ import { reloadCourseList, addToCalView } from "./front.js";
 
 
 export let savedCourses = {};
-let CalSorces = [];
-export let cal;
 // code:
 //      name: 
 //      customName: 
+
+let CalSorces = [];
+export let cal;
+
 
 async function loadCalFromSorce() {
     console.log("loadCalFromSorce")
