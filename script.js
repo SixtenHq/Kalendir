@@ -26,12 +26,12 @@ async function loadCalFromSorce() {
 }
 
 export function updateCal() {
-    const comps = new ICAL.Component(dt.getCal());
+    const comps = dt.getCal();
     const events = comps.getAllSubcomponents("vevent");
     format(events);
     reloadCourseList();
     addToCalView(events);
-    dt.set
+    dt.setCal(comps);
 }
 
 function format(events) {
@@ -95,17 +95,6 @@ function isEdited(event) {
 }
 
 
-async function sendIcalToServer(icsText) {
-
-    const response = await fetch("/worker", {
-        method: "POST",
-        body: icsText
-    });
-
-    const result = await response.text();
-
-    console.log(result);
-}
 
 
 

@@ -26,11 +26,11 @@ export function setId(newId) {
 }
 //-----
 export function getCal() {
-    return ICAL.parse(sessionData.ics);
+    return new ICAL.Component(ICAL.parse(sessionData.ics));
 }
 
 export function setCal(newCal) {
-    sessionData.ics = newCal.stringify;
+    sessionData.ics = newCal.toString();
 }
 
 export function setIcs(newIcs) {
