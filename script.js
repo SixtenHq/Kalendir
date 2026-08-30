@@ -31,6 +31,7 @@ export function updateCal() {
     format(events);
     reloadCourseList();
     addToCalView(events);
+    dt.set
 }
 
 function format(events) {

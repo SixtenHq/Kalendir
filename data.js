@@ -29,6 +29,10 @@ export function getCal() {
     return ICAL.parse(sessionData.ics);
 }
 
+export function setCal(newCal) {
+    sessionData.ics = newCal.stringify;
+}
+
 export function setIcs(newIcs) {
     sessionData.ics = newIcs;
 }

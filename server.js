@@ -15,7 +15,7 @@ export async function uploadCal() {
         data: dt.exportData()
     })
 
-    const url = new URL("https://kalendir.pages.dev/worker");
+    const url = new URL("https://kalendir.pages.dev/import");
     url.searchParams.set("id", dt.getId());
     console.log(url.toString());
 
