@@ -1,3 +1,5 @@
+import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
+
 export async function onRequest(context) {
     const env = context.env;
     const url = new URL(context.request.url);
