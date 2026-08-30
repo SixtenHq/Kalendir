@@ -19,8 +19,8 @@ async function loadCalFromSorce() {
 
     //hämta och skriv om Ical till lästligt format
     const response = await fetch(CalSorceLink);
-    const data = await response.text();
-    dt.setCal(ICAL.parse(data));
+    const ics = await response.text();
+    dt.setIcs(ics);
     updateCal();
     
 }

@@ -1,7 +1,9 @@
+import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
+
 const sessionData = 
 {
     id: null,
-    cal: null,
+    ics: null,
     CalSorces: [],
     savedCourses: {
         // code:
@@ -24,11 +26,11 @@ export function setId(newId) {
 }
 //-----
 export function getCal() {
-    return sessionData.cal;
+    return ICAL.parse(sessionData.ics);
 }
 
-export function setCal(newCal) {
-    sessionData.cal = newCal;
+export function setIcs(newIcs) {
+    sessionData.ics = newIcs;
 }
 //-----
 export function getCalSorces() {

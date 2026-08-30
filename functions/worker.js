@@ -1,5 +1,3 @@
-import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
-
 export async function onRequest(context) {
     const env = context.env;
     const url = new URL(context.request.url);
@@ -17,8 +15,7 @@ export async function onRequest(context) {
         });
     }
     const data = JSON.parse(result.data);
-    var cal = data.cal;
-    var ics = new ICAL.Component(cal).toString();
+    var ics = data.ics;
 
     return new Response(ics, {
         headers: {
