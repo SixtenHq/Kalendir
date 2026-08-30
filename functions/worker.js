@@ -14,7 +14,8 @@ export async function onRequest(context) {
             status: 404
         });
     }
-    var cal = result.data.getCal();
+    const data = JSON.parse(result.data);
+    var cal = data.cal;
     var ics = new ICAL.Component(cal).toString();
 
     return new Response(ics, {

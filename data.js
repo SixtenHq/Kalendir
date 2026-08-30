@@ -8,7 +8,6 @@ const sessionData =
         //      name: 
         //      customName: 
         },
-            
 };
 
 export function exportData() {
