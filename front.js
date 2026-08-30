@@ -1,5 +1,6 @@
 import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
-import { savedCourses, updateCal } from "./script.js";
+import { updateCal } from "./script.js";
+import * as dt from "./data.js";
 
 let calendar;
 
@@ -57,7 +58,7 @@ export function reloadCourseList() {
     const corseListContainer = document.getElementById("courseList");
     corseListContainer.innerHTML = "";
 
-    for (const [courseCode, courseName] of Object.entries(savedCourses)) {
+    for (const [courseCode, courseName] of Object.entries(dt.gettSavedCourses())) {
         const row = document.createElement("div");
         row.classList.add("courseRow")
 
@@ -102,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("haha")
         if (event.target.id.startsWith("input")) {
             console.log("hehe")
-            const course = savedCourses[event.target.id.slice(5)]
+            const course = dt.gettSavedCourses()[event.target.id.slice(5)]
             if (course) {
                 course.customName = event.target.value;
                 updateCal();

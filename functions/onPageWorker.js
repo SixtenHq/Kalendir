@@ -4,13 +4,13 @@ export async function onRequest(context) {
         const database = context.env.dattabas;
         
         if (context.request.method === "POST") {
-            const data = await context.request.json();
-            var iCal = data.iCal;
-            var id = data.id;
+            const packet = await context.request.json();
+            var id = packet.id;
+            var data = packet.data;
         
             await database
-                .prepare("INSERT OR REPLACE INTO calendar (id, iCal) VALUES (?, ?)")
-                .bind(id,iCal)
+                .prepare("INSERT OR REPLACE INTO calendar (id, data) VALUES (?, ?)")
+                .bind(id,data)
                 .run();
         
             return new Response("Kalender sparad");

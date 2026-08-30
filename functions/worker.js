@@ -5,7 +5,7 @@ export async function onRequest(context) {
 
     // Hämta kalender från D1
     const result = await env.dattabas
-        .prepare("SELECT iCal FROM calendar WHERE id = ?")
+        .prepare("SELECT data FROM calendar WHERE id = ?")
         .bind(id)
         .first();
 
@@ -14,8 +14,10 @@ export async function onRequest(context) {
             status: 404
         });
     }
+    var cal = result.data.getCal();
+    var ics = new ICAL.Component(cal).toString();
 
-    return new Response(result.iCal, {
+    return new Response(ics, {
         headers: {
             "Content-Type": "text/calendar; charset=utf-8"
         }

@@ -1,14 +1,6 @@
 import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
 import { reloadCourseList, addToCalView } from "./front.js";
-
-
-export let savedCourses = {};
-// code:
-//      name: 
-//      customName: 
-
-let CalSorces = [];
-export let cal;
+import * as dt from "./data.js";
 
 
 async function loadCalFromSorce() {
@@ -18,22 +10,23 @@ async function loadCalFromSorce() {
         console.log("fel sorce link!");
         return;
     }
-    if (CalSorces.includes(CalSorceLink)) {
+    if (dt.CalSorcesIncludes(CalSorceLink)) {
         console.log("redan inlagd");
         return;
     }
-    CalSorces.push(CalSorceLink);
+    dt.addCalSorce(CalSorceLink);
+    
 
     //hämta och skriv om Ical till lästligt format
     const response = await fetch(CalSorceLink);
     const data = await response.text();
-    cal = ICAL.parse(data);
+    dt.setCal(ICAL.parse(data));
     updateCal();
     
 }
 
 export function updateCal() {
-    const comps = new ICAL.Component(cal);
+    const comps = new ICAL.Component(dt.getCal());
     const events = comps.getAllSubcomponents("vevent");
     format(events);
     reloadCourseList();
@@ -70,16 +63,14 @@ function formatSummary(event) {
             courseName = part.slice(6).trim();
             
             var courseCode = summaryParts[i];
-            var savedCourse = savedCourses[courseCode]
+            var savedCourse = dt.gettSavedCourse(courseCode);
 
             if (savedCourse && savedCourse.customName) {
                 courseName = savedCourse.customName;
             } else if (savedCourse) {
                 courseName = savedCourse.name;
             } else {
-                savedCourses[courseCode] = {
-                    name: courseName
-                };
+                dt.addSavedCourse(courseCode,courseName);
             }
             i++;
 
@@ -92,7 +83,7 @@ function formatSummary(event) {
         return courseName + " " + type;
     } else {
         console.log("faild to make summary");
-        console.log(savedCourses);
+        console.log(dt.gettSavedCourses());
         return event.summary
     }
         

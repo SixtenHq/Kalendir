@@ -1,26 +1,28 @@
 import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
-import { cal } from "./script.js";
+import * as dt from "./data.js";
 
 
- export async function uploadCal() {
+export async function uploadCal() {
     console.log("uppload start");
-    var iCal =  new ICAL.Component(cal).toString();
-    var id = crypto.randomUUID();
-    if (!iCal) console.error("iCal NULL")
 
-    var data = JSON.stringify({
-        iCal: iCal,
-        id: id
+    if (!dt.getId()) {
+        dt.setId(crypto.randomUUID());
+        console.log("new id: " + dt.getId());
+    } 
+
+    var packet = JSON.stringify({
+        id: dt.getId(),
+        data: dt.getData()
     })
 
     const url = new URL("https://kalendir.pages.dev/worker");
-    url.searchParams.set("id", id);
+    url.searchParams.set("id", dt.getId());
     console.log(url.toString());
 
 
     const response = await fetch("/onPageWorker", {
         method: "POST",
-        body: data
+        body: packet
     });
 
     const result = await response.text();
