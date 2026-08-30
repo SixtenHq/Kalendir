@@ -12,7 +12,7 @@ export async function uploadCal() {
 
     var packet = JSON.stringify({
         id: dt.getId(),
-        data: dt.getData()
+        data: dt.exportData()
     })
 
     const url = new URL("https://kalendir.pages.dev/worker");

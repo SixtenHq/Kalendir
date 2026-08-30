@@ -100,9 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const corseListContainer = document.getElementById("courseList");
     corseListContainer.addEventListener("change", (event) => {
-        console.log("haha")
         if (event.target.id.startsWith("input")) {
-            console.log("hehe")
             const course = dt.gettSavedCourses()[event.target.id.slice(5)]
             if (course) {
                 course.customName = event.target.value;

@@ -11,8 +11,8 @@ const sessionData =
             
 };
 
-export function getData() {
-    return sessionData;
+export function exportData() {
+    return JSON.stringify(sessionData);
 }
 
 //-----
