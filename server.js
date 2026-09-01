@@ -32,13 +32,15 @@ export async function uploadCal() {
 
 export async function getInfo() {
     const input = document.getElementById("InternalCalTextField").value;
-    const url = new URL(input);
-    const id = url.searchParams.get("id");
+    const inUrl = new URL(input);
+    const id = inUrl.searchParams.get("id");
     console.log(id);
 
-    const response = await fetch("/onPageWorker", {
+    const url = new URL("/onPageWorker");
+    url.searchParams.set("id", id);
+
+    const response = await fetch(url, {
         method: "GET",
-        body: id
     });
 
     const result = await response.text();

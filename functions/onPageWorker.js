@@ -17,8 +17,9 @@ export async function onRequest(context) {
         }
     
         if (context.request.method === "GET") {
-            const id = await context.request.text();
-            console.log(id);
+            const env = context.env;
+            const url = new URL(context.request.url);
+            const id = url.searchParams.get("id");
 
             const inData = await database
                 .prepare("SELECT data FROM calendar WHERE id = ?")
