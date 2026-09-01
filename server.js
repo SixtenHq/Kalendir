@@ -37,7 +37,7 @@ export async function getInfo() {
     console.log(id);
 
     const response = await fetch("/onPageWorker", {
-        method: "POST",
+        method: "GET",
         body: id
     });
 
