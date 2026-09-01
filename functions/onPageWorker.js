@@ -16,21 +16,25 @@ export async function onRequest(context) {
             return new Response("Kalender sparad");
         }
     
-        /*if (context.request.method === "GET") {
-            const calendar = await database
-                .prepare("SELECT ics FROM calendar WHERE id = 1")
+        if (context.request.method === "GET") {
+            const id = await context.request.text();
+            console.log(id);
+
+            const inData = await database
+                .prepare("SELECT data FROM calendar WHERE id = ?")
+                .bind(id)
                 .first();
         
-            if (!calendar) {
-                return new Response("Ingen kalender finns");
+            if (!inData) {
+                return new Response("hittade inte data");
             }
         
-            return new Response(calendar.ics, {
+            return new Response(inData.data, {
                 headers: {
-                    "Content-Type": "text/calendar"
+                    "Content-Type": "application/json"
                 }
             });
-        }*/
+        }
 
     } catch (error) {
         console.error(error);

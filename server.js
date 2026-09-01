@@ -30,6 +30,23 @@ export async function uploadCal() {
     console.log(result);
 }
 
+export async function getInfo() {
+    const input = document.getElementById("InternalCalTextField").value;
+    const url = new URL(input);
+    const id = url.searchParams.get("id");
+    console.log(id);
+
+    const response = await fetch("/onPageWorker", {
+        method: "POST",
+        body: id
+    });
+
+    const result = await response.text();
+
+    console.log(result);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("uploadBtn").addEventListener("click", uploadCal);
+    document.getElementById("InternalCalBtn").addEventListener("click", getInfo);
 });
