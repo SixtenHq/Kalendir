@@ -36,7 +36,7 @@ export async function getInfo() {
     const id = inUrl.searchParams.get("id");
     console.log(id);
 
-    const url = new URL("/onPageWorker");
+    const url = new URL("/onPageWorker", window.location.href);
     url.searchParams.set("id", id);
 
     const response = await fetch(url, {
