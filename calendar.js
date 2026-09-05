@@ -1,27 +1,18 @@
 import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
-import { reloadCourseList, addToCalView } from "./front.js";
-import { loadCalFromSorce } from "./calendar.js";
 import * as dt from "./data.js";
 
+export async function loadCalFromSorce() {
+    const CalSorceLinks = dt.getCalSorces();
 
-async function loadCalSorce() {
-    const CalSorceLink = document.getElementById("CalSorceTextfield").value;
-    if (!CalSorceLink.includes("cloud.timeedit.net/liu/web/schema")) {
-        console.log("fel sorce link!");
-        return;
+    for (const link in CalSorceLinks) {
+        const response = await fetch(link);
+        const ics = await response.text();
+        dt.addIcs(ics);
     }
-    if (dt.CalSorcesIncludes(CalSorceLink)) {
-        console.log("redan inlagd");
-        return;
-    }
-    dt.addCalSorce(CalSorceLink);
-    
-    updateCal();
     
 }
 
 export function updateCal() {
-    loadCalFromSorce();
     const comps = dt.getCal();
     const events = comps.getAllSubcomponents("vevent");
     format(events);
@@ -89,11 +80,3 @@ function formatSummary(event) {
 function isEdited(event) {
     return event.description.startsWith("Orginal title: ");
 }
-
-
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("LoadCalBtn").addEventListener("click", loadCalSorce);
-});

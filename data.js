@@ -1,6 +1,6 @@
 import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
 
-const sessionData = 
+var sessionData = 
 {
     id: null,
     ics: null,
@@ -14,6 +14,10 @@ const sessionData =
 
 export function exportData() {
     return JSON.stringify(sessionData);
+}
+
+export function importData(importedData) {
+    sessionData = importedData;
 }
 
 //-----
@@ -35,6 +39,19 @@ export function setCal(newCal) {
 
 export function setIcs(newIcs) {
     sessionData.ics = newIcs;
+}
+
+export function addIcs(newIcs) {
+    if (!sessionData.ics) {
+       const newcomps = ICAL.Component(ICAL.parse(newIcs));
+        const newEvents = newcomps.getAllSubcomponents("vevent");
+        for (const newEvent of newEvents) {
+            ICAL.Component(ICAL.parse(sessionData.ics)).addSubcomponent(newEvent);
+        } 
+    } else {
+        sessionData.ics = newIcs;
+    }
+    
 }
 //-----
 export function getCalSorces() {

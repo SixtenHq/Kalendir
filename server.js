@@ -1,4 +1,3 @@
-import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
 import * as dt from "./data.js";
 
 
@@ -45,7 +44,7 @@ export async function getInfo() {
 
     const result = await response.text();
 
-    console.log(result);
+    dt.importData(result);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
