@@ -13,8 +13,7 @@ var sessionData =
         },
     excludeRules: [
         // [rule, exeption, ignored]
-        ["ruleEX", "exeptionEX", false],
-        ["ruleEX", "exeptionEX", false]
+        // ["ruleEX", "exeptionEX", false],
         ]
 };
 
@@ -47,12 +46,31 @@ export function setCal(newCal) {
     sessionData.ics = newCal.toString();
 }
 
+export function addEvent(event) {
+    const cal = getCal();
+    cal.addSubcomponent(event);
+    setCal(cal);
+}
+
 export function setIcs(newIcs) {
     sessionData.ics = newIcs;
 }
 
+export function getIcs() {
+    return sessionData.ics;
+}
+
 export function hasIcs() {
     return (false || (sessionData.ics))
+}
+
+export function clearIcs() {
+    const cal = getCal();
+    const events = cal.getAllSubcomponents("vevent");
+    for (const event of events) {
+        cal.removeSubcomponent(event);
+    }
+    setCal(cal);
 }
 //-----
 export function getCalSorces() {

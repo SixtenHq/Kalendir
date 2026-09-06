@@ -15,32 +15,55 @@ export async function updateCal() {
 function makeIcs() {
     const calendar = new ICAL.Component("vcalendar");
 
-    calendar.addPropertyWithValue("version", "2.0");
-    calendar.addPropertyWithValue("prodid", "-//Mitt Program//EN");
+    calendar.addPropertyWithValue("VERSION", "2.0");
+    calendar.addPropertyWithValue("PRODID", "-//Kalendir//EN");
+    calendar.addPropertyWithValue("CALSCALE", "GREGORIAN");
+    calendar.addPropertyWithValue("X-WR-CALNAME", "Kalendir :D");
+    calendar.addPropertyWithValue("X-WR-CALDESC", "Kalender redigerad av Kalendir");
 
-
-    
+    const ics = calendar.toString();
+    dt.setIcs(ics);
 }
 
 async function loadCalFromSorce() {
-    if (!dt.hasIcs) {
-        //makeIcs();
+    if (!dt.hasIcs()) {
+        makeIcs();
     }
-    const CalSorceLinks = dt.getCalSorces();
 
+    dt.clearIcs();
+
+    const CalSorceLinks = dt.getCalSorces();
     for (const link of CalSorceLinks) {
         const response = await fetch(link);
         const ics = await response.text();
         
-        if (dt.hasIcs()) {
-            const newcomps = new ICAL.Component(ICAL.parse(ics));
-            const newEvents = newcomps.getAllSubcomponents("vevent");
-            for (const newEvent of newEvents) {
-                dt.getCal().addSubcomponent(newEvent);
-            } 
-        } else {
-            dt.setIcs(ics);
-        }
+        const comps = new ICAL.Component(ICAL.parse(ics));
+        const events = comps.getAllSubcomponents("vevent");
+        for (const e of events) {
+            const event = new ICAL.Event(e);
+            let include = true;
+            for (const [rules, exeptions, ignored] of dt.getExcludeRules()) {
+                let rulesList = rules.split(";")
+                let exeptionsList = exeptions.split(";")
+
+                if (rulesList.some(rule => event.description.toLowerCase().includes(rule.toLowerCase())) && 
+                    !exeptionsList.some(exeption => event.description.toLowerCase().includes(exeption.toLowerCase())) && 
+                    !ignored) 
+                    {
+                    include = false;
+                }
+                if (rulesList.some(rule => event.summary.toLowerCase().includes(rule.toLowerCase())) && 
+                    !exeptionsList.some(exeption => event.summary.toLowerCase().includes(exeption.toLowerCase())) && 
+                    !ignored) 
+                    {
+                    include = false;
+                }
+            }
+            
+            if (include) {
+                dt.addEvent(e);
+            }
+        } 
     }
 }
 
