@@ -42,8 +42,7 @@ async function loadCalFromSorce() {
         for (const e of events) {
             const event = new ICAL.Event(e);
             let include = true;
-            if (dt.getExcludeRules()[0]) {
-                console.log(dt.getExcludeRules());
+            if (dt.getExcludeRules() && dt.getExcludeRules()[0]) {
                 for (const [rules, exeptions, ignored] of dt.getExcludeRules()) {
                     if (ignored) continue;
 

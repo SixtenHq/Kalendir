@@ -171,7 +171,6 @@ function reloadRulesList() {
     
 
     let index = 0;
-    console.log(dt.getExcludeRules());
     for (const [rule, exeption, ignored] of dt.getExcludeRules()) {
         if (rule.trim() == "" && exeption.trim() == "" && index != rules.length - 1) {
             dt.removeExcludeRule(index);
