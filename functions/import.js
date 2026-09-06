@@ -1,3 +1,6 @@
+import * as dt from "../data.js";
+import { updateCal } from "../calendar.js";
+
 export async function onRequest(context) {
     const env = context.env;
     const url = new URL(context.request.url);
@@ -15,7 +18,9 @@ export async function onRequest(context) {
         });
     }
     const data = JSON.parse(result.data);
-    var ics = data.ics;
+    dt.importData(data);
+    updateCal();
+    const ics = dt.getIcs();
 
     return new Response(ics, {
         headers: {
