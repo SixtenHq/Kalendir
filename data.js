@@ -11,9 +11,11 @@ var sessionData =
         //      customName: 
         //      ignored:
         },
-    excludeRules: {
-        // text: exeption
-    }
+    excludeRules: [
+        // [rule, exeption, ignored]
+        ["ruleEX", "exeptionEX", false],
+        ["ruleEX", "exeptionEX", false]
+        ]
 };
 
 export function exportData() {
@@ -80,3 +82,14 @@ export function addSavedCourse(courseCode, name) {
     };
 }
 //-----
+export function getExcludeRules() {
+    return sessionData.excludeRules;
+}
+
+export function addExcludeRule(rule, exeption = "") {
+    sessionData.excludeRules.push([rule,exeption,false]);
+}
+
+export function removeExcludeRule(i) {
+    sessionData.excludeRules.splice(importData,1);
+}

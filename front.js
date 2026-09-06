@@ -7,6 +7,7 @@ let calendar;
 export async function reload() {
     await updateCal();
     reloadCourseList();
+    reloadRulesList()
     updateCalView();
 }
 
@@ -44,17 +45,26 @@ function createCalendar() {
 
             eventClick: function(info) {
 
-                if (info.event.extendedProps.selected) {
-                    info.event.setProp("backgroundColor", "");
-                    info.event.setProp("borderColor", "");
+                const state = ((info.event.extendedProps.state ?? 0) + 1) % 3;
+
+                switch (state) {
+                    case 0:
+                        info.event.setProp("backgroundColor", "");
+                        info.event.setProp("borderColor", "");
+                        break;
                 
-                    info.event.setExtendedProp("selected", false);
-                } else {
-                    info.event.setProp("backgroundColor", "gray");
-                    info.event.setProp("borderColor", "gray");
+                    case 1:
+                        info.event.setProp("backgroundColor", "gray");
+                        info.event.setProp("borderColor", "gray");
+                        break;
                 
-                    info.event.setExtendedProp("selected", true);
+                    case 2:
+                        info.event.setProp("backgroundColor", "red");
+                        info.event.setProp("borderColor", "red");
+                        break;
                 }
+
+                info.event.setExtendedProp("state", state);
             
             }           
         }
@@ -120,7 +130,7 @@ function reloadCourseList() {
         
         button.id = "button" + courseCode;
         button.addEventListener("click", () => {
-            ignoreCourse(courseCode, row);
+            ignoreCourse(courseCode);
         });
         if (courseInfo.ignored){
             button.textContent = "Min kurs";
@@ -144,66 +154,78 @@ function ignoreCourse(courseCode) {
     reload();
 }
 
-// Rules
-/*
+// ------------------ Rules -------------------
+
 function reloadRulesList() {
     const RulesListContainer = document.getElementById("rulesList");
     RulesListContainer.innerHTML = "";
-
-    for (const [courseCode, courseInfo] of Object.entries(dt.gettSavedCourses())) {
+    
+    let index = 0;
+    for (const [rule, exeption, ignored] of dt.getExcludeRules()) {
+        const i = index;
         const row = document.createElement("div");
         row.classList.add("courseRow")
-        if (courseInfo.ignored) {
+        if (ignored) {
             row.classList.add("gray");
         }
 
         //lable
         const label = document.createElement("label");
-        label.textContent = courseCode + ": "+ courseInfo.name;
-        
+        label.textContent = "Exclude if contains:";
         label.classList.add("lableSize");
         row.appendChild(label);
 
         //input fält
         const input = document.createElement("input");
         input.type = "text";
-        if (courseInfo.customName) {
-            input.value = courseInfo.customName;
-        } 
-        input.placeholder = "Eget namn"
+        input.value = rule;
         input.classList.add("kursRuta");
-        input.id = "input" + courseCode;
-
+        input.id = "ruleInput" + i;
         row.appendChild(input);
+
+        //lable
+        const label2 = document.createElement("label");
+        label2.textContent = "But not if contains:";
+        label2.classList.add("lableSize");
+        row.appendChild(label2);
+
+        //input fält
+        const input2 = document.createElement("input");
+        input2.type = "text";
+        input2.value = exeption;
+        input2.classList.add("kursRuta");
+        input2.id = "exeptionInput" + i;
+        row.appendChild(input2);
 
         //knapp
         const button = document.createElement("button");
         
-        button.id = "button" + courseCode;
+        button.id = "ruleButton" + i;
         button.addEventListener("click", () => {
-            ignoreCourse(courseCode, row);
+            ignoreRule(i);
         });
-        if (courseInfo.ignored){
-            button.textContent = "Min kurs";
+        if (ignored){
+            button.textContent = "Aktivera regel";
         } else {
-            button.textContent = "Inte min kurs";
+            button.textContent = "Ignorera regel";
         }
 
         row.appendChild(button);
         
-        corseListContainer.appendChild(row);
+        RulesListContainer.appendChild(row);
+        index++;
     }
 }
 
-function ignoreCourse(courseCode) {
-    var course = dt.gettSavedCourse(courseCode);
-    if (course.ignored){
-        course.ignored = false;
+function ignoreRule(i) {
+    let ignored = dt.getExcludeRules()[i][2];
+    if (ignored){
+        dt.getExcludeRules()[i][2] = false;
     } else {
-        course.ignored = true;
+        dt.getExcludeRules()[i][2] = true;
     }
     reload();
-}*/
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     createCalendar();

@@ -12,7 +12,20 @@ export async function updateCal() {
     dt.setCal(comps);
 }
 
+function makeIcs() {
+    const calendar = new ICAL.Component("vcalendar");
+
+    calendar.addPropertyWithValue("version", "2.0");
+    calendar.addPropertyWithValue("prodid", "-//Mitt Program//EN");
+
+
+    
+}
+
 async function loadCalFromSorce() {
+    if (!dt.hasIcs) {
+        //makeIcs();
+    }
     const CalSorceLinks = dt.getCalSorces();
 
     for (const link of CalSorceLinks) {
@@ -35,7 +48,7 @@ async function loadCalFromSorce() {
 
 function format(events) {
 
-    for (var e of events) {
+    for (let e of events) {
         const event = new ICAL.Event(e);
         if (!isEdited(event)) {
             event.description = "Orginal title: " + event.summary + "\n" + event.description;
@@ -45,7 +58,7 @@ function format(events) {
 }
 
 function formatSummary(event) {
-    var descriptionParts = event.description.split("\n");
+    let descriptionParts = event.description.split("\n");
     let summaryParts;
     if (isEdited(event)) {
         summaryParts = descriptionParts[0].slice(15).split(", "); // get original titel insted of edited
@@ -54,16 +67,16 @@ function formatSummary(event) {
     }
     
     
-    var courseName = "";
-    var type = "";
+    let courseName = "";
+    let type = "";
 
-    var i = 0;
+    let i = 0;
     for (const part of descriptionParts) {
         if (part.startsWith("Kurs: ")) {
-            var tempCourseName = part.slice(6).trim();
+            let tempCourseName = part.slice(6).trim();
             
-            var courseCode = summaryParts[i];
-            var savedCourse = dt.gettSavedCourse(courseCode);
+            let courseCode = summaryParts[i];
+            let savedCourse = dt.gettSavedCourse(courseCode);
             if (savedCourse && savedCourse.customName) {
                 tempCourseName = savedCourse.customName;
             } else if (savedCourse) {
@@ -95,3 +108,4 @@ function formatSummary(event) {
 function isEdited(event) {
     return event.description.startsWith("Orginal title: ");
 }
+
