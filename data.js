@@ -23,6 +23,10 @@ export function exportData() {
 
 export function importData(importedData) {
     sessionData = importedData;
+    // fixa data från gamla veriationer
+    if (sessionData.CalSorces == undefined) sessionData.CalSorces = [];
+    if (sessionData.savedCourses == undefined) sessionData.savedCourses = {};
+    if (sessionData.excludeRules == undefined) sessionData.excludeRules = [];
 }
 
 export function DataToString() {
