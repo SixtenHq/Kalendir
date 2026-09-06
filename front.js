@@ -161,7 +161,7 @@ function reloadRulesList() {
     RulesListContainer.innerHTML = "";
     
     let rules = dt.getExcludeRules();
-    if (!rules[0]) {
+    if (!rules || !rules[0]) {
         dt.addExcludeRule("","",false);
     }
     if (rules[rules.length - 1][0].trim() != "") {
