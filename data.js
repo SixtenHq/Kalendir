@@ -13,7 +13,7 @@ var sessionData =
         },
     excludeRules: [
         // [rule, exeption, ignored]
-        // ["ruleEX", "exeptionEX", false],
+        ["ruleEX", "exeptionEX", false],
         ]
 };
 
