@@ -13,7 +13,7 @@ var sessionData =
         },
     excludeRules: [
         // [rule, exeption, ignored]
-        ["ruleEX", "exeptionEX", false],
+        //["ruleEX", "exeptionEX", false],
         ]
 };
 
@@ -110,4 +110,8 @@ export function addExcludeRule(rule, exeption = "") {
 
 export function removeExcludeRule(i) {
     sessionData.excludeRules.splice(importData,1);
+}
+
+export function setExcludeRule(i, input) {
+    sessionData.excludeRules[i] = input;
 }

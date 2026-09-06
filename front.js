@@ -160,8 +160,23 @@ function reloadRulesList() {
     const RulesListContainer = document.getElementById("rulesList");
     RulesListContainer.innerHTML = "";
     
+    let rules = dt.getExcludeRules();
+    if (!rules[0]) {
+        dt.addExcludeRule("","",false);
+    }
+    if (rules[rules.length - 1][0].trim() != "") {
+        dt.addExcludeRule("","",false);
+    }
+    
+    
+
     let index = 0;
+    console.log(dt.getExcludeRules());
     for (const [rule, exeption, ignored] of dt.getExcludeRules()) {
+        if (rule.trim() == "" && exeption.trim() == "" && index != rules.length - 1) {
+            dt.removeExcludeRule(index);
+            continue;
+        }
         const i = index;
         const row = document.createElement("div");
         row.classList.add("courseRow")
@@ -181,6 +196,11 @@ function reloadRulesList() {
         input.value = rule;
         input.classList.add("kursRuta");
         input.id = "ruleInput" + i;
+        input.addEventListener("change", (event) => {
+            let newRule = [event.target.value, exeption, ignored];
+            dt.setExcludeRule(i,newRule);
+            reload();
+        });
         row.appendChild(input);
 
         //lable
@@ -195,6 +215,11 @@ function reloadRulesList() {
         input2.value = exeption;
         input2.classList.add("kursRuta");
         input2.id = "exeptionInput" + i;
+        input2.addEventListener("change", (event) => {
+            let newRule = [rule, event.target.value, ignored];
+            dt.setExcludeRule(i,newRule);
+            reload();
+        });
         row.appendChild(input2);
 
         //knapp
@@ -238,10 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 course.customName = event.target.value;
                 reload();
             }
-        } else if (event.target.id.startsWith("button")) {
-
-        }
-        
+        } 
     });
     document.getElementById("LoadCalBtn").addEventListener("click", loadCalSorce);
 });

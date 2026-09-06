@@ -42,24 +42,24 @@ async function loadCalFromSorce() {
         for (const e of events) {
             const event = new ICAL.Event(e);
             let include = true;
-            for (const [rules, exeptions, ignored] of dt.getExcludeRules()) {
-                let rulesList = rules.split(";")
-                let exeptionsList = exeptions.split(";")
+            if (dt.getExcludeRules) {
+                for (const [rules, exeptions, ignored] of dt.getExcludeRules()) {
+                    if (ignored) continue;
 
-                if (rulesList.some(rule => event.description.toLowerCase().includes(rule.toLowerCase())) && 
-                    !exeptionsList.some(exeption => event.description.toLowerCase().includes(exeption.toLowerCase())) && 
-                    !ignored) 
-                    {
-                    include = false;
-                }
-                if (rulesList.some(rule => event.summary.toLowerCase().includes(rule.toLowerCase())) && 
-                    !exeptionsList.some(exeption => event.summary.toLowerCase().includes(exeption.toLowerCase())) && 
-                    !ignored) 
-                    {
-                    include = false;
+                    let rulesList = rules.split(";")
+                    let exeptionsList = exeptions.split(";")
+
+                    if (rulesList.some(rule => event.description.toLowerCase().includes(rule.toLowerCase()) && rule.trim() != "") ||
+                        rulesList.some(rule => event.summary.toLowerCase().includes(rule.toLowerCase()) && rule.trim() != "")) 
+                        {
+                            if (!(exeptionsList.some(exeption => event.description.toLowerCase().includes(exeption.toLowerCase()) && exeption.trim() != "") ||
+                            exeptionsList.some(exeption => event.summary.toLowerCase().includes(exeption.toLowerCase()) && exeption.trim() != ""))) 
+                            {
+                                include = false;
+                        }
+                    }
                 }
             }
-            
             if (include) {
                 dt.addEvent(e);
             }
