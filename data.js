@@ -24,6 +24,10 @@ export function importData(importedData) {
     sessionData = importedData;
 }
 
+export function DataToString() {
+    return sessionData.id + "\n" + sessionData.CalSorces + "\n" + sessionData.savedCourses + "\n" + sessionData.excludeRules + "\n" + sessionData.ics;
+}
+
 //-----
 export function getId() {
     return sessionData.id;

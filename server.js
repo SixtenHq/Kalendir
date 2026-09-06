@@ -45,8 +45,9 @@ export async function getInfo() {
     });
 
     const result = await response.text();
+    const data = JSON.parse(result);
 
-    dt.importData(result);
+    dt.importData(data);
     reload();
 }
 
