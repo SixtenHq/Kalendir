@@ -1,4 +1,5 @@
 import * as dt from "./data.js";
+import { reload } from "./front.js";
 
 
 export async function uploadCal() {
@@ -46,6 +47,7 @@ export async function getInfo() {
     const result = await response.text();
 
     dt.importData(result);
+    reload();
 }
 
 document.addEventListener("DOMContentLoaded", () => {

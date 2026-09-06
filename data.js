@@ -11,6 +11,9 @@ var sessionData =
         //      customName: 
         //      ignored:
         },
+    excludeRules: {
+        // text: exeption
+    }
 };
 
 export function exportData() {

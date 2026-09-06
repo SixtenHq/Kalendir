@@ -4,7 +4,7 @@ import * as dt from "./data.js";
 
 let calendar;
 
-async function reload() {
+export async function reload() {
     await updateCal();
     reloadCourseList();
     updateCalView();
@@ -144,6 +144,66 @@ function ignoreCourse(courseCode) {
     reload();
 }
 
+// Rules
+/*
+function reloadRulesList() {
+    const RulesListContainer = document.getElementById("rulesList");
+    RulesListContainer.innerHTML = "";
+
+    for (const [courseCode, courseInfo] of Object.entries(dt.gettSavedCourses())) {
+        const row = document.createElement("div");
+        row.classList.add("courseRow")
+        if (courseInfo.ignored) {
+            row.classList.add("gray");
+        }
+
+        //lable
+        const label = document.createElement("label");
+        label.textContent = courseCode + ": "+ courseInfo.name;
+        
+        label.classList.add("lableSize");
+        row.appendChild(label);
+
+        //input fält
+        const input = document.createElement("input");
+        input.type = "text";
+        if (courseInfo.customName) {
+            input.value = courseInfo.customName;
+        } 
+        input.placeholder = "Eget namn"
+        input.classList.add("kursRuta");
+        input.id = "input" + courseCode;
+
+        row.appendChild(input);
+
+        //knapp
+        const button = document.createElement("button");
+        
+        button.id = "button" + courseCode;
+        button.addEventListener("click", () => {
+            ignoreCourse(courseCode, row);
+        });
+        if (courseInfo.ignored){
+            button.textContent = "Min kurs";
+        } else {
+            button.textContent = "Inte min kurs";
+        }
+
+        row.appendChild(button);
+        
+        corseListContainer.appendChild(row);
+    }
+}
+
+function ignoreCourse(courseCode) {
+    var course = dt.gettSavedCourse(courseCode);
+    if (course.ignored){
+        course.ignored = false;
+    } else {
+        course.ignored = true;
+    }
+    reload();
+}*/
 
 document.addEventListener("DOMContentLoaded", () => {
     createCalendar();
