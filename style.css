@@ -34,3 +34,7 @@ body {
     gap: 10px;
     margin-bottom: 8px;
 }
+
+.gray {
+    opacity: 0.5;
+}

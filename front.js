@@ -1,8 +1,35 @@
 import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
-import { updateCal } from "./script.js";
+import { updateCal } from "./calendar.js";
 import * as dt from "./data.js";
 
 let calendar;
+
+async function reload() {
+    await updateCal();
+    reloadCourseList();
+    updateCalView();
+}
+
+
+async function loadCalSorce() {
+    const CalSorceLink = document.getElementById("CalSorceTextfield").value;
+    
+    if (!CalSorceLink.includes("cloud.timeedit.net/liu/web/schema")) {
+        console.log("fel sorce link!");
+        return;
+    }
+    if (dt.CalSorcesIncludes(CalSorceLink)) {
+        console.log("redan inlagd");
+        return;
+    }
+    dt.addCalSorce(CalSorceLink);
+    
+    reload();
+}
+
+
+
+
 
 // ------------------ kalender UI -------------------
 
@@ -13,6 +40,7 @@ function createCalendar() {
         {
             initialView: "timeGridWeek",
             slotMinTime: "06:00:00",
+            //firstDay: 1,
 
             eventClick: function(info) {
 
@@ -35,9 +63,12 @@ function createCalendar() {
     calendar.render();
 }
 
-export function addToCalView(events) {
+function updateCalView() {
     calendar.removeAllEvents();
+    const comps = dt.getCal();
+    const events = comps.getAllSubcomponents("vevent");
     for (var e of events) {
+        
         const event = new ICAL.Event(e);
 
         calendar.addEvent({
@@ -54,17 +85,20 @@ export function addToCalView(events) {
 
 // ------------------ Curslistan -------------------
 
-export function reloadCourseList() {
+function reloadCourseList() {
     const corseListContainer = document.getElementById("courseList");
     corseListContainer.innerHTML = "";
 
-    for (const [courseCode, courseName] of Object.entries(dt.gettSavedCourses())) {
+    for (const [courseCode, courseInfo] of Object.entries(dt.gettSavedCourses())) {
         const row = document.createElement("div");
         row.classList.add("courseRow")
+        if (courseInfo.ignored) {
+            row.classList.add("gray");
+        }
 
         //lable
         const label = document.createElement("label");
-        label.textContent = courseCode + ": "+ courseName.name;
+        label.textContent = courseCode + ": "+ courseInfo.name;
         
         label.classList.add("lableSize");
         row.appendChild(label);
@@ -72,8 +106,8 @@ export function reloadCourseList() {
         //input fält
         const input = document.createElement("input");
         input.type = "text";
-        if (courseName.customName) {
-            input.value = courseName.customName;
+        if (courseInfo.customName) {
+            input.value = courseInfo.customName;
         } 
         input.placeholder = "Eget namn"
         input.classList.add("kursRuta");
@@ -83,8 +117,16 @@ export function reloadCourseList() {
 
         //knapp
         const button = document.createElement("button");
-        button.textContent = "Inte min kurs";
+        
         button.id = "button" + courseCode;
+        button.addEventListener("click", () => {
+            ignoreCourse(courseCode, row);
+        });
+        if (courseInfo.ignored){
+            button.textContent = "Min kurs";
+        } else {
+            button.textContent = "Inte min kurs";
+        }
 
         row.appendChild(button);
         
@@ -92,7 +134,15 @@ export function reloadCourseList() {
     }
 }
 
-
+function ignoreCourse(courseCode) {
+    var course = dt.gettSavedCourse(courseCode);
+    if (course.ignored){
+        course.ignored = false;
+    } else {
+        course.ignored = true;
+    }
+    reload();
+}
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -104,11 +154,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const course = dt.gettSavedCourses()[event.target.id.slice(5)]
             if (course) {
                 course.customName = event.target.value;
-                updateCal();
+                reload();
             }
         } else if (event.target.id.startsWith("button")) {
 
         }
         
     });
+    document.getElementById("LoadCalBtn").addEventListener("click", loadCalSorce);
 });

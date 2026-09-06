@@ -17,6 +17,7 @@ export async function uploadCal() {
     const url = new URL("https://kalendir.pages.dev/import");
     url.searchParams.set("id", dt.getId());
     console.log(url.toString());
+    document.getElementById("kalendirLinkLabel").textContent = url.toString();
 
 
     const response = await fetch("/onPageWorker", {

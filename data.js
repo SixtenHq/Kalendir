@@ -9,6 +9,7 @@ var sessionData =
         // code:
         //      name: 
         //      customName: 
+        //      ignored:
         },
 };
 
@@ -41,17 +42,8 @@ export function setIcs(newIcs) {
     sessionData.ics = newIcs;
 }
 
-export function addIcs(newIcs) {
-    if (!sessionData.ics) {
-       const newcomps = ICAL.Component(ICAL.parse(newIcs));
-        const newEvents = newcomps.getAllSubcomponents("vevent");
-        for (const newEvent of newEvents) {
-            ICAL.Component(ICAL.parse(sessionData.ics)).addSubcomponent(newEvent);
-        } 
-    } else {
-        sessionData.ics = newIcs;
-    }
-    
+export function hasIcs() {
+    return (false || (sessionData.ics))
 }
 //-----
 export function getCalSorces() {
@@ -76,7 +68,8 @@ export function gettSavedCourse(courseCode) {
 
 export function addSavedCourse(courseCode, name) {
     sessionData.savedCourses[courseCode] = {
-        name: name
+        name: name,
+        ignored: false
     };
 }
 //-----

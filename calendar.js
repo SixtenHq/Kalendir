@@ -1,25 +1,37 @@
 import ICAL from "https://unpkg.com/ical.js/dist/ical.min.js";
 import * as dt from "./data.js";
 
-export async function loadCalFromSorce() {
-    const CalSorceLinks = dt.getCalSorces();
 
-    for (const link in CalSorceLinks) {
-        const response = await fetch(link);
-        const ics = await response.text();
-        dt.addIcs(ics);
-    }
-    
-}
+export async function updateCal() {
+    await loadCalFromSorce();
 
-export function updateCal() {
     const comps = dt.getCal();
     const events = comps.getAllSubcomponents("vevent");
+    
     format(events);
-    reloadCourseList();
-    addToCalView(events);
     dt.setCal(comps);
 }
+
+async function loadCalFromSorce() {
+    const CalSorceLinks = dt.getCalSorces();
+
+    for (const link of CalSorceLinks) {
+        const response = await fetch(link);
+        const ics = await response.text();
+        
+        if (dt.hasIcs()) {
+            const newcomps = new ICAL.Component(ICAL.parse(ics));
+            const newEvents = newcomps.getAllSubcomponents("vevent");
+            for (const newEvent of newEvents) {
+                dt.getCal().addSubcomponent(newEvent);
+            } 
+        } else {
+            dt.setIcs(ics);
+        }
+    }
+}
+
+
 
 function format(events) {
 
@@ -36,7 +48,7 @@ function formatSummary(event) {
     var descriptionParts = event.description.split("\n");
     let summaryParts;
     if (isEdited(event)) {
-        summaryParts = descriptionParts[0].slice(15).split(", ");
+        summaryParts = descriptionParts[0].slice(15).split(", "); // get original titel insted of edited
     } else {
         summaryParts = event.summary.split(", ");
     }
@@ -48,21 +60,25 @@ function formatSummary(event) {
     var i = 0;
     for (const part of descriptionParts) {
         if (part.startsWith("Kurs: ")) {
-            courseName = part.slice(6).trim();
+            var tempCourseName = part.slice(6).trim();
             
             var courseCode = summaryParts[i];
             var savedCourse = dt.gettSavedCourse(courseCode);
-
             if (savedCourse && savedCourse.customName) {
-                courseName = savedCourse.customName;
+                tempCourseName = savedCourse.customName;
             } else if (savedCourse) {
-                courseName = savedCourse.name;
+                tempCourseName = savedCourse.name;
             } else {
-                dt.addSavedCourse(courseCode,courseName);
+                dt.addSavedCourse(courseCode,tempCourseName);
             }
+
+            if ((savedCourse && !savedCourse.ignored) || !savedCourse) {
+                courseName = tempCourseName;
+            }
+            
             i++;
 
-        }else if (part.startsWith("Undervisningstyp: ")) {
+        } else if (part.startsWith("Undervisningstyp: ")) {
             type = part.slice(17).trim();
         }
     }
@@ -71,8 +87,7 @@ function formatSummary(event) {
         return courseName + " " + type;
     } else {
         console.log("faild to make summary");
-        console.log(dt.gettSavedCourses());
-        return event.summary
+        return summaryParts.join(" ");
     }
         
 }
