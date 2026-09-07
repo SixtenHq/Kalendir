@@ -19,9 +19,8 @@ export async function onRequest(context) {
     }
     const data = JSON.parse(result.data);
     dt.importData(data);
-    console.log(dt.DataToString());
     updateCal();
-    console.log(dt.DataToString());
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n" + dt.DataToString());
     const ics = dt.getIcs();
 
     return new Response(ics, {

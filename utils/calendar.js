@@ -4,7 +4,7 @@ import * as dt from "./data.js";
 
 export async function updateCal() {
     await loadCalFromSorce();
-
+    console.log(dt.DataToString());
     const comps = dt.getCal();
     const events = comps.getAllSubcomponents("vevent");
     
