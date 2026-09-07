@@ -1,5 +1,5 @@
-import * as dt from "../data.js";
-import { updateCal } from "../calendar.js";
+import * as dt from "../utils/data.js";
+import { updateCal } from "../utils/calendar.js";
 
 export async function onRequest(context) {
     const env = context.env;
