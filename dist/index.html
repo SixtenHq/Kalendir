@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kalendir</title>
+
+  <script type="module" crossorigin src="/assets/index-CzVpmy1N.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-D8-uX5W8.css">
+</head>
+
+<body>
+
+    <div class="box">
+
+        <h2>Kalendir Alpha</h2>
+        Välkomen till din nya fina kalender!
+        
+        <br><br>
+
+        <label for="CalSorceTextfield">TimeEdit iCal länk:</label>
+        <input type="text" id="CalSorceTextfield" value="https://cloud.timeedit.net/liu/web/schema/ri60Z146X72Z09Q6Z56g2Y00y6026Y02n00gQY6Q547615Q14.ics">
+        <button id="LoadCalBtn">Lägg till kalender</button>
+        
+        <br><br>
+
+        <label for="InternalCalTextField">Kalendir länk:</label>
+        <input type="text" id="InternalCalTextField" value="https://kalendir.pages.dev/import?id=935422f1-9ffc-4e99-bcb5-6afd9bd92f43">
+        <button id="InternalCalBtn">Hämta kalender</button>
+        
+        <br><hr><br>
+
+        <div id="courseList"></div>
+
+        <br><hr><br>
+
+        <div id="rulesList"></div>
+
+        <br><hr><br>
+
+        <button id="uploadBtn">Spara</button>
+        <br>
+        <label id="kalendirLinkLabel"></label>
+
+        <br><hr><br>
+
+        <div id="calendar"></div>
+
+    </div>
+
+
+    <!-- Kopplar in JavaScript-filen -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+</body>
+</html>
