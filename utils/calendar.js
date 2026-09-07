@@ -56,6 +56,7 @@ async function loadCalFromSorce() {
                             exeptionsList.some(exeption => event.summary.toLowerCase().includes(exeption.toLowerCase()) && exeption.trim() != ""))) 
                             {
                                 include = false;
+                                break;
                         }
                     }
                 }
