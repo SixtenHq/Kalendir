@@ -1,15 +1,29 @@
 import ICAL from "ical.js";
 import * as dt from "./data.js";
 
+let lastUpdate = 0;
+let pausedAt = 0;
+let pausedTime = 0;
 
 export async function updateCal() {
-    await loadCalFromSorce();
-    console.log(dt.DataToString());
+    const start = performance.now();
+    pausedTime = 0;
+
+    const now = Date.now();
+    //if (now - lastUpdate >= 60 * 1000 || !dt.getIcs()) {
+        await loadCalFromSorce();
+        //lastUpdate = now;
+    //}
+    
+
     const comps = dt.getCal();
     const events = comps.getAllSubcomponents("vevent");
     
     format(events);
     dt.setCal(comps);
+
+    const end = performance.now();
+    console.log(`updateCal tog ${end - start - pausedTime} ms`);
 }
 
 function makeIcs() {
@@ -34,8 +48,10 @@ async function loadCalFromSorce() {
 
     const CalSorceLinks = dt.getCalSorces();
     for (const link of CalSorceLinks) {
+        pausedAt = performance.now();
         const response = await fetch(link);
         const ics = await response.text();
+        pausedTime += performance.now() - pausedAt;
         
         const comps = new ICAL.Component(ICAL.parse(ics));
         const events = comps.getAllSubcomponents("vevent");
