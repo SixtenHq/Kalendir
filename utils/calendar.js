@@ -46,8 +46,11 @@ async function loadCalFromSorce() {
 
     dt.clearIcs();
 
+    const excludeRules = prepareExcludeRules()
+
     const CalSorceLinks = dt.getCalSorces();
     for (const link of CalSorceLinks) {
+        // get calendar from TimeEdit
         pausedAt = performance.now();
         const response = await fetch(link);
         const ics = await response.text();
@@ -55,25 +58,18 @@ async function loadCalFromSorce() {
         
         const comps = new ICAL.Component(ICAL.parse(ics));
         const events = comps.getAllSubcomponents("vevent");
+
         for (const e of events) {
-            const event = new ICAL.Event(e);
             let include = true;
-            if (dt.getExcludeRules()[0]) {
-                for (const [rules, exeptions, ignored] of dt.getExcludeRules()) {
+            if (excludeRules.length > 0) {
+                const event = new ICAL.Event(e);
+                const eventText = (event.description + event.summary).toLocaleLowerCase();
+
+                for (const { rules, exceptions, ignored } of excludeRules) {
                     if (ignored) continue;
-
-                    let rulesList = rules.split(";")
-                    let exeptionsList = exeptions.split(";")
-
-                    if (rulesList.some(rule => event.description.toLowerCase().includes(rule.toLowerCase()) && rule.trim() != "") ||
-                        rulesList.some(rule => event.summary.toLowerCase().includes(rule.toLowerCase()) && rule.trim() != "")) 
-                        {
-                            if (!(exeptionsList.some(exeption => event.description.toLowerCase().includes(exeption.toLowerCase()) && exeption.trim() != "") ||
-                            exeptionsList.some(exeption => event.summary.toLowerCase().includes(exeption.toLowerCase()) && exeption.trim() != ""))) 
-                            {
-                                include = false;
-                                break;
-                        }
+                    if (rules.some(rule => eventText.includes(rule)) && !exceptions.some(exeption => eventText.includes(exeption))) {
+                        include = false;
+                        break;
                     }
                 }
             }
@@ -82,6 +78,19 @@ async function loadCalFromSorce() {
             }
         } 
     }
+}
+
+function prepareExcludeRules() {
+    const excludeRules = dt.getExcludeRules().map(([rules, exceptions, ignored]) => ({
+        rules: rules.split(";")
+            .map(rule => rule.trim().toLowerCase())
+            .filter(Boolean),
+        exceptions: exceptions.split(";")
+            .map(exception => exception.trim().toLowerCase())
+            .filter(Boolean),
+        ignored
+    }));
+    return excludeRules;
 }
 
 

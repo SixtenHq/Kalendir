@@ -6,6 +6,15 @@ export async function onRequest(context) {
     const url = new URL(context.request.url);
     const id = url.searchParams.get("id");
 
+    date = new Date().toLocaleTimeString("sv-SE", {
+        timeZone: "Europe/Stockholm",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+
+    console.log(date + ": " + id + "start import");
+
     // Hämta kalender från D1
     const result = await env.dattabas
         .prepare("SELECT data FROM calendar WHERE id = ?")
