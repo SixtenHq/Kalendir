@@ -4,26 +4,58 @@ import * as dt from "./data.js";
 let lastUpdate = 0;
 let pausedAt = 0;
 let pausedTime = 0;
+let start
+let countStart = 0;
+let timeCount = 0;
+
+function timeStart() {
+    start = performance.now();
+    pausedTime = 0;
+}
+
+function timeEnd() {
+    const end = performance.now();
+    console.log(`exec tog ${end - start - pausedTime} ms`);
+}
+
+function timePause() {
+    pausedAt = performance.now();
+}
+
+function timeUnpause() {
+    pausedTime += performance.now() - pausedAt;
+}
+
+function timeStartCount() {
+    countStart = performance.now();
+}
+
+function timeStopCount() {
+    timeCount += performance.now() - countStart;
+}
+
+function timeCountEnd() {
+    console.log(`count ${timeCount} ms`);
+    timeCount = 0;
+}
+
+
 
 export async function updateCal() {
-    const start = performance.now();
-    pausedTime = 0;
-
+    timeStart();
     const now = Date.now();
     //if (now - lastUpdate >= 60 * 1000 || !dt.getIcs()) {
         await loadCalFromSorce();
         //lastUpdate = now;
     //}
     
-
     const comps = dt.getCal();
     const events = comps.getAllSubcomponents("vevent");
     
     format(events);
     dt.setCal(comps);
 
-    const end = performance.now();
-    console.log(`updateCal tog ${end - start - pausedTime} ms`);
+    timeEnd();
 }
 
 function makeIcs() {
@@ -40,31 +72,36 @@ function makeIcs() {
 }
 
 async function loadCalFromSorce() {
+    
     if (!dt.hasIcs()) {
         makeIcs();
     }
 
     dt.clearIcs();
-
+    
     const excludeRules = prepareExcludeRules()
-
     const CalSorceLinks = dt.getCalSorces();
+    let eventList = [];
+    
     for (const link of CalSorceLinks) {
         // get calendar from TimeEdit
-        pausedAt = performance.now();
+        
         const response = await fetch(link);
         const ics = await response.text();
-        pausedTime += performance.now() - pausedAt;
+        
         
         const comps = new ICAL.Component(ICAL.parse(ics));
+        
         const events = comps.getAllSubcomponents("vevent");
-
+        
         for (const e of events) {
             let include = true;
             if (excludeRules.length > 0) {
+                
                 const event = new ICAL.Event(e);
+                
                 const eventText = (event.description + event.summary).toLocaleLowerCase();
-
+                
                 for (const { rules, exceptions, ignored } of excludeRules) {
                     if (ignored) continue;
                     if (rules.some(rule => eventText.includes(rule)) && !exceptions.some(exeption => eventText.includes(exeption))) {
@@ -72,12 +109,17 @@ async function loadCalFromSorce() {
                         break;
                     }
                 }
+                
+                
             }
             if (include) {
-                dt.addEvent(e);
+                eventList.push(e);
             }
         } 
+        
     }
+    dt.addEvents(eventList);
+    
 }
 
 function prepareExcludeRules() {

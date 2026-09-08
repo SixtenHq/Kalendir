@@ -56,6 +56,14 @@ export function addEvent(event) {
     setCal(cal);
 }
 
+export function addEvents(events) {
+    const cal = getCal();
+    for (const event of events) {
+        cal.addSubcomponent(event);
+    }
+    setCal(cal);
+}
+
 export function setIcs(newIcs) {
     sessionData.ics = newIcs;
 }
