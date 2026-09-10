@@ -42,7 +42,6 @@ function timeCountEnd() {
 
 
 export async function updateCal() {
-    timeStart();
     const now = Date.now();
     //if (now - lastUpdate >= 60 * 1000 || !dt.getIcs()) {
         await loadCalFromSorce();
@@ -55,7 +54,6 @@ export async function updateCal() {
     format(events);
     dt.setCal(comps);
 
-    timeEnd();
 }
 
 function makeIcs() {
@@ -89,16 +87,21 @@ async function loadCalFromSorce() {
         const response = await fetch(link);
         const ics = await response.text();
         
-        
+        timeStartCount();
         const comps = new ICAL.Component(ICAL.parse(ics));
-        
         const events = comps.getAllSubcomponents("vevent");
+        timeStopCount();
         
+
+
         for (const e of events) {
+            
             let include = true;
             if (excludeRules.length > 0) {
                 
                 const event = new ICAL.Event(e);
+                
+                
                 
                 const eventText = (event.description + event.summary).toLocaleLowerCase();
                 
@@ -112,12 +115,17 @@ async function loadCalFromSorce() {
                 
                 
             }
+            
+
             if (include) {
+                
                 eventList.push(e);
+                
             }
         } 
         
     }
+    timeCountEnd();
     dt.addEvents(eventList);
     
 }

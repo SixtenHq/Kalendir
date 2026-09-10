@@ -1,0 +1,47 @@
+BEGIN:VEVENT
+DTSTART:20260910T061500Z
+DTEND:20260910T080000Z
+UID:3941614--425816690-0@timeedit.com
+DTSTAMP:20260910T052720Z
+LAST-MODIFIED:20260910T052720Z
+URL:https://use.mazemap.com/?campusid=742&sharepoitype=identifier&sharepoi=
+ E0007003%3A2C.3
+SUMMARY:KMM Föreläsning
+LOCATION:Lokal: C3
+DESCRIPTION:Orginal title: TSEA29\, FÖ\, DI3\, D3\nKurs: Konstruktion med 
+ mikrodatorer\, projektkurs \nLärare: Anders Nilsson \nInformation: Fö4 : 
+ Plan \nUndervisningstyp: Föreläsning \nKarta: https://use.mazemap.com/?ca
+ mpusid=742&sharepoitype=identifier&sharepoi=E0007003%3A2C.3\nID 3941614
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART:20260910T111500Z
+DTEND:20260910T130000Z
+UID:3991340--425816690-0@timeedit.com
+DTSTAMP:20260910T052720Z
+LAST-MODIFIED:20260910T052720Z
+URL:https://use.mazemap.com/?campusid=742&sharepoitype=identifier&sharepoi=
+ E0007001%3A3C%3A883
+SUMMARY:Transformer Lektion
+LOCATION:Lokal: A37
+DESCRIPTION:Orginal title: TSDT84\, LE\, I3\, D3\nKurs: Signaler och system
+ samt transformer \nInformation: Lektion 1 \nUndervisningstyp: Lektion \nKa
+ rta: https://use.mazemap.com/?campusid=742&sharepoitype=identifier&sharepoi
+ =E0007001%3A3C%3A883\nID 3991340
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART:20260911T061500Z
+DTEND:20260911T080000Z
+UID:3967865--425816690-0@timeedit.com
+DTSTAMP:20260910T052720Z
+LAST-MODIFIED:20260910T052720Z
+URL:https://use.mazemap.com/?campusid=742&sharepoitype=identifier&sharepoi=
+ E0007001%3A3C%3A848
+SUMMARY:Optimering Lektion
+LOCATION:Lokal: A31
+DESCRIPTION:Orginal title: TAOP33\, LE\, D3\nKurs: Kombinatorisk optimering
+ gk \nLärare: Roghayeh Hajizadeh \nInformation: Le 4 \nUndervisningstyp: L
+ ektion \nKarta: https://use.mazemap.com/?campusid=742&sharepoitype=identifi
+ er&sharepoi=E0007001%3A3C%3A848\nID 3967865
+END:VEVENT

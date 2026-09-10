@@ -14,7 +14,10 @@ var sessionData =
     excludeRules: [
         // [rule, exeption, ignored]
         //["ruleEX", "exeptionEX", false],
-        ]
+        ],
+    
+    calHeader: null,
+    calEvents: [],
 };
 
 export function exportData() {
