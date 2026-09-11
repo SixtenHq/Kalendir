@@ -1,37 +1,38 @@
 import ICAL from "ical.js";
 import * as dt from "./data.js";
+import * as time from "./time.js";
 
 
 export async function updateCal() {
-    await loadCalFromSorce();
+    await importCal();
 }
 
-async function loadCalFromSorce() {
-    
-    /*if (!dt.hasCal()) {
-        makeCal();
-    }*/
-
-    
+async function importCal() {
+        
     const CalSorceLinks = dt.getCalSorces();
-    const savedEvents = new Map();
+    const savedEvents = dt.getEvents();
     const newEventList = new Map();
-    const currentTime = new Date.now();
     
+    //import new events
     for (const link of CalSorceLinks) {
-        // get calendar from TimeEdit
         
         const response = await fetch(link);
         const ics = await response.text();
         const comps = new ICAL.Component(ICAL.parse(ics));
         const importedEvents = comps.getAllSubcomponents("vevent");
+        const currentTime = Date.now();
         
-
+        time.start();
+        time.pause();
         for (const e of importedEvents) {
+            
+            time.unpause();
             const id = e.getFirstPropertyValue("uid");
+            time.pause();
             const savedEvent = savedEvents.get(id);
+            
             const importedEventLastModified = e.getFirstPropertyValue("last-modified").toJSDate();
-
+            
             if (!savedEvent || importedEventLastModified < savedEvent.lastModified) {
                 newEventList.set(id, {
                     start: e.getFirstPropertyValue("dtstart").toJSDate(),
@@ -44,12 +45,20 @@ async function loadCalFromSorce() {
                     location: e.getFirstPropertyValue("location"),
                     description: e.getFirstPropertyValue("description")
                 });
+                savedEvents.delete(id);
             } else {
-                newEventList.set(id, savedEvent);
+                newEventList.set(id, savedEvent); // FEL!!!!!!!!!!!!!!!!!!!!
             }
+            
         } 
     }    
-    console.log(newEventList);
+    time.end();
+    // spara gamla event
+    for (const e of savedEvents) {
+        if (!newEventList.get(e.id) && e.start < currentTime) {
+            newEventList.set(e.id, e);
+        }
+    }
 }
 
 function makeCal() {

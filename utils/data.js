@@ -3,7 +3,6 @@ import ICAL from "ical.js";
 var sessionData = 
 {
     id: null,
-    ics: null,
     CalSorces: [],
     savedCourses: {
         // code:
@@ -16,8 +15,13 @@ var sessionData =
         //["ruleEX", "exeptionEX", false],
         ],
     
-    calHeader: null,
-    calEvents: [],
+    calHeader: {
+        prodId: "-//Kalendir//EN",
+        scale: "GREGORIAN",
+        name: "Kalendir :D",
+        description: "Kalender redigerad av Kalendir"
+    },
+    calEvents: new Map(),
 };
 
 export function exportData() {
@@ -45,34 +49,22 @@ export function setId(newId) {
     sessionData.id = newId;
 }
 //-----
-export function getCal() {
-    return new ICAL.Component(ICAL.parse(sessionData.ics));
+export function getEvents() {
+    return sessionData.calEvents;
 }
 
-export function setCal(newCal) {
-    sessionData.ics = newCal.toString();
+export function setEvents(events) {
+    sessionData.ics = events;
 }
 
-export function addEvent(event) {
-    const cal = getCal();
-    cal.addSubcomponent(event);
-    setCal(cal);
+//-----
+
+export function setHeader(header) {
+    sessionData.calHeader = header;
 }
 
-export function addEvents(events) {
-    const cal = getCal();
-    for (const event of events) {
-        cal.addSubcomponent(event);
-    }
-    setCal(cal);
-}
-
-export function setIcs(newIcs) {
-    sessionData.ics = newIcs;
-}
-
-export function getIcs() {
-    return sessionData.ics;
+export function getHeader() {
+    return sessionData.calHeader;
 }
 
 export function hasIcs() {

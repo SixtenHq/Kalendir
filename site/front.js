@@ -1,14 +1,15 @@
 import ICAL from "ical.js";
-import { updateCal } from "../utils/calendar.js";
+import { updateCal } from "../utils/calendar2.js";
 import * as dt from "../utils/data.js";
 
 let calendar;
 
 export async function reload() {
     await updateCal();
+    /*
     reloadCourseList();
     reloadRulesList()
-    updateCalView();
+    updateCalView();*/
 }
 
 
