@@ -6,10 +6,9 @@ let calendar;
 
 export async function reload() {
     await updateCal();
-    /*
     reloadCourseList();
     reloadRulesList()
-    updateCalView();*/
+    updateCalView();
 }
 
 
@@ -29,10 +28,6 @@ async function loadCalSorce() {
     reload();
 }
 
-
-
-
-
 // ------------------ kalender UI -------------------
 
 // skapa kalendervisning
@@ -42,7 +37,7 @@ function createCalendar() {
         {
             initialView: "timeGridWeek",
             slotMinTime: "06:00:00",
-            //firstDay: 1,
+            firstDay: 1,
 
             eventClick: function(info) {
 
@@ -76,21 +71,16 @@ function createCalendar() {
 
 function updateCalView() {
     calendar.removeAllEvents();
-    const comps = dt.getCal();
-    const events = comps.getAllSubcomponents("vevent");
-    for (var e of events) {
-        
-        const event = new ICAL.Event(e);
-
+    const events = dt.getIcsEvents();
+    for (var event of events) {
         calendar.addEvent({
             title: event.summary,
-            start: event.startDate.toJSDate(),
-            end: event.endDate.toJSDate(),
+            start: event.start,
+            end: event.end,
             extendedProps: {
                 originalEvent: event
             }
         });
-
     }
 }
 
@@ -107,14 +97,14 @@ function reloadCourseList() {
             row.classList.add("gray");
         }
 
-        //lable
+        // lable
         const label = document.createElement("label");
         label.textContent = courseCode + ": "+ courseInfo.name;
         
         label.classList.add("lableSize");
         row.appendChild(label);
 
-        //input fält
+        // input fält
         const input = document.createElement("input");
         input.type = "text";
         if (courseInfo.customName) {
@@ -126,7 +116,7 @@ function reloadCourseList() {
 
         row.appendChild(input);
 
-        //knapp
+        // knapp
         const button = document.createElement("button");
         
         button.id = "button" + courseCode;
@@ -173,7 +163,7 @@ function reloadRulesList() {
 
     let index = 0;
     for (const [rule, exeption, ignored] of dt.getExcludeRules()) {
-        if (rule.trim() == "" && exeption.trim() == "" && index != rules.length - 1) {
+        if (rule.trim() == "" && exeption.trim() == "" && index != rules.length - 1 && rules.length != 1) {
             dt.removeExcludeRule(index);
             continue;
         }

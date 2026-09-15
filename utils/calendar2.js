@@ -1,4 +1,3 @@
-import ICAL from "ical.js";
 import * as dt from "./data.js";
 import * as time from "./time.js";
 import { parceIcs } from "./icalParcer.js";
@@ -7,6 +6,8 @@ import { parceIcs } from "./icalParcer.js";
 export async function updateCal() {
     time.start();
     await importCal();
+    filterCal();
+    format();
     time.end();
 }
 
@@ -15,6 +16,7 @@ async function importCal() {
     const CalSorceLinks = dt.getCalSorces();
     const savedEvents = dt.getEvents();
     const newEventList = new Map();
+    const preservedEvents = dt.getPreservedEvents();
     
     //import new events
     for (const link of CalSorceLinks) {
@@ -38,7 +40,85 @@ async function importCal() {
     // spara gamla event
     for (const event of savedEvents) {
         if (!newEventList.get(event.id) && event.start < currentTime) {
-            newEventList.set(event.id, eevnet);
+            preservedEvents.set(event.id, event);
         }
     }
+    dt.setEvents(newEventList);
+}
+
+function filterCal(){
+    const cal = dt.getEvents();
+    const rules = dt.getDeformattedExcludeRules();
+    for (const rule of rules) {
+        if (!rule.ignored) {
+            for (const event of cal.values()) {
+                const eventText = (event.description + event.summary).toLocaleLowerCase();
+                
+                if (eventText.includes(rule.rules) && !eventText.includes(rule.exeptions)){
+                    cal.delete(event.id);
+                }
+            }
+        }
+    }
+}
+
+function format() {
+    const events = dt.getEvents();
+    for (let event of events) {
+        if (!isEdited(event)) {
+            event.description = "Orginal title: " + event.summary + "\n" + event.description;
+        }
+        formatSummary(event);
+    }
+}
+
+function formatSummary(event) {
+    const descriptionParts = event.description.split("\n");
+    let summaryParts;
+    if (isEdited(event)) {
+        summaryParts = descriptionParts[0].slice(15).split(", "); // get original titel insted of edited
+    } else {
+        summaryParts = event.summary.split(", ");
+    }
+    
+    let courseName = "";
+    let type = "";
+
+    let i = 0;
+    for (const part of descriptionParts) {
+        console.log("Aaaaaaaaaaaaaaa    ")
+        if (part.startsWith("Kurs: ")) {
+            let tempCourseName = part.slice(6).trim(); // get name
+            const courseCode = summaryParts[i]; // get coresponding corse code
+            const savedCourse = dt.gettSavedCourse(courseCode);
+            if (savedCourse && savedCourse.customName) {
+                tempCourseName = savedCourse.customName;
+            } else if (savedCourse) {
+                tempCourseName = savedCourse.name;
+            } else {
+                dt.addSavedCourse(courseCode,tempCourseName);
+            }
+
+            if ((savedCourse && !savedCourse.ignored) || !savedCourse) {
+                courseName = tempCourseName;
+            }
+            
+            i++;
+
+        } else if (part.startsWith("Undervisningstyp: ")) {
+            type = part.slice(17).trim(); // get type
+        }
+    }
+
+    if (courseName != "" && type != "") {
+        event.summary = courseName + " " + type;
+    } else {
+        console.log("faild to make summary");
+        event.summary = summaryParts.join(" ");
+    }       
+}
+
+function isEdited(event) {
+    console.log(dt.DataToString());
+    return event.description.startsWith("Orginal title: ");
 }

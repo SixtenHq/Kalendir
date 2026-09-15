@@ -1,4 +1,4 @@
-import ICAL from "ical.js";
+import ical from "ical-generator";
 
 var sessionData = 
 {
@@ -22,6 +22,7 @@ var sessionData =
         description: "Kalender redigerad av Kalendir"
     },
     calEvents: new Map(),
+    calPreservedEvents: new Map(),
 };
 
 export function exportData() {
@@ -37,7 +38,30 @@ export function importData(importedData) {
 }
 
 export function DataToString() {
-    return sessionData.id + "\n" + sessionData.CalSorces + "\n" + sessionData.savedCourses + "\n" + sessionData.excludeRules + "\n" + sessionData.ics;
+    console.log(sessionData.calEvents.values().next().value);
+    return "id: " + sessionData.id + "\n" + "cal sorces: " + sessionData.CalSorces + "\n" + "saved corses: " + sessionData.savedCourses + "\n" + "excluderules: " + sessionData.excludeRules + "\n" + "number of events: " + sessionData.calEvents.size;
+}
+
+export function getIcs() {
+    const ics = ical(calHeader);
+    for (const event of sessionData.calEvents) {
+        ics.createEvent(event);
+    }
+    for (const event of sessionData.calPreservedEvents) {
+        ics.createEvent(event);
+    }
+    return ics;
+}
+
+export function getIcsEvents() {
+    const icsEvents = [];
+    for (const event of sessionData.calEvents) {
+        icsEvents.push(ics.createEvent(event))
+    }
+    for (const event of sessionData.calPreservedEvents) {
+        icsEvents.push(ics.createEvent(event))
+    }
+    return icsEvents;
 }
 
 //-----
@@ -54,11 +78,19 @@ export function getEvents() {
 }
 
 export function setEvents(events) {
-    sessionData.ics = events;
+    sessionData.calEvents = events;
 }
 
 //-----
+export function getPreservedEvents() {
+    return sessionData.calPreservedEvents;
+}
 
+export function setPreservedEvents(events) {
+    sessionData.calPreservedEvents = events;
+}
+
+//-----
 export function setHeader(header) {
     sessionData.calHeader = header;
 }
@@ -111,12 +143,25 @@ export function getExcludeRules() {
     return sessionData.excludeRules;
 }
 
+export function getDeformattedExcludeRules() {
+    const excludeRules = sessionData.excludeRules.map(([rules, exceptions, ignored]) => ({
+        rules: rules.split(";")
+            .map(rule => rule.trim().toLowerCase())
+            .filter(Boolean),
+        exceptions: exceptions.split(";")
+            .map(exception => exception.trim().toLowerCase())
+            .filter(Boolean),
+        ignored
+    }));
+    return excludeRules;
+}
+
 export function addExcludeRule(rule, exeption = "") {
     sessionData.excludeRules.push([rule,exeption,false]);
 }
 
 export function removeExcludeRule(i) {
-    sessionData.excludeRules.splice(importData,1);
+    sessionData.excludeRules.splice(i,1);
 }
 
 export function setExcludeRule(i, input) {
