@@ -25,17 +25,23 @@ let sessionData =
 };
 
 export function exportData() {
-    return JSON.stringify(sessionData);
+    let tempSessionData = structuredClone(sessionData);
+    tempSessionData.calEvents = Array.from(sessionData.calEvents);
+    tempSessionData.calPreservedEvents = Array.from(sessionData.calPreservedEvents);
+    return JSON.stringify(tempSessionData);
 }
 
 export function importData(importedData) {
-    let tempSessionData = importedData;
+    let tempSessionData = structuredClone(importedData);
+
+    tempSessionData.calEvents = new Map(importedData.calEvents);
+    tempSessionData.calPreservedEvents = new Map(importedData.calPreservedEvents);
+
     // fixa data från gamla veriationer
     if (tempSessionData.CalSorces == undefined) tempSessionData.CalSorces = sessionData.CalSorces;
     if (tempSessionData.savedCourses == undefined) tempSessionData.savedCourses = sessionData.savedCourses;
     if (tempSessionData.excludeRules == undefined) tempSessionData.excludeRules = sessionData.excludeRules;
-    if (tempSessionData.calEvents == undefined) tempSessionData.calEvents = sessionData.calEvents;
-    if (tempSessionData.calPreservedEvents == undefined) tempSessionData.calPreservedEvents = sessionData.calPreservedEvents;
+    sessionData = tempSessionData;
 }
 
 export function DataToString() {

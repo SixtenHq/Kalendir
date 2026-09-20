@@ -4,6 +4,8 @@ import { reload } from "./front.js";
 
 export async function uploadCal() {
     console.log("uppload start");
+    console.log(dt.exportData());
+    console.log(dt.DataToString());
 
     if (!dt.getId()) {
         dt.setId(crypto.randomUUID());
