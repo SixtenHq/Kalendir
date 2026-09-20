@@ -28,7 +28,6 @@ export function exportData() {
     let tempSessionData = structuredClone(sessionData);
     tempSessionData.calEvents = Array.from(sessionData.calEvents);
     tempSessionData.calPreservedEvents = Array.from(sessionData.calPreservedEvents);
-    console.log("export "+ DataToString());
     return JSON.stringify(tempSessionData);
 }
 
@@ -43,11 +42,11 @@ export function importData(importedData) {
     if (tempSessionData.savedCourses == undefined) tempSessionData.savedCourses = sessionData.savedCourses;
     if (tempSessionData.excludeRules == undefined) tempSessionData.excludeRules = sessionData.excludeRules;
     sessionData = tempSessionData;
-    console.log("import" + DataToString());
+    console.log("import " + DataToString());
 }
 
 export function DataToString() {
-    console.log(sessionData.calEvents.values().next().value);
+    //console.log(sessionData.calEvents.values().next().value);
     return "id: " + sessionData.id + "\n" + "cal sorces: " + sessionData.CalSorces + "\n" + "saved corses: " + sessionData.savedCourses + "\n" + "excluderules: " + sessionData.excludeRules + "\n" + "number of events: " + sessionData.calEvents.size;
 }
 
@@ -59,6 +58,7 @@ export function getIcs() {
     for (const [id, event] of sessionData.calPreservedEvents) {
         ics.createEvent(event);
     }
+    console.log("getics "+ DataToString());
     return ics;
 }
 
