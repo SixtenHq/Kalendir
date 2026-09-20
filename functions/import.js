@@ -6,7 +6,7 @@ export async function onRequest(context) {
     const url = new URL(context.request.url);
     const id = url.searchParams.get("id");
 
-    date = new Date().toLocaleTimeString("sv-SE", {
+    const date = new Date().toLocaleTimeString("sv-SE", {
         timeZone: "Europe/Stockholm",
         hour: "2-digit",
         minute: "2-digit",
@@ -26,7 +26,7 @@ export async function onRequest(context) {
             status: 404
         });
     }
-    
+
     const data = JSON.parse(result.data);
     dt.importData(data);
     await updateCal();
