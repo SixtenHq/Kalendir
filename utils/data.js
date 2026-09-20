@@ -28,6 +28,7 @@ export function exportData() {
     let tempSessionData = structuredClone(sessionData);
     tempSessionData.calEvents = Array.from(sessionData.calEvents);
     tempSessionData.calPreservedEvents = Array.from(sessionData.calPreservedEvents);
+    console.log(DataToString());
     return JSON.stringify(tempSessionData);
 }
 
