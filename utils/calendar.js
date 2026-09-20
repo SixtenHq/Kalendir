@@ -6,9 +6,10 @@ import { parceIcs } from "./icalParcer.js";
 export async function updateCal() {
     time.start();
     await importCal();
-    console.log("import\n" + dt.DataToString());
     filterCal();
+    console.log("filter\n" + dt.DataToString());
     format();
+    console.log("format\n" + dt.DataToString());
     time.end();
 }
 
@@ -41,7 +42,6 @@ async function importCal() {
                 savedEvents.delete(id);
             }
         } 
-        console.log(newEventList.values().next().value);
     }    
     // spara gamla event
     const currentTime = Date.now();
