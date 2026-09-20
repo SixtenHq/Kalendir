@@ -33,10 +33,13 @@ async function importCal() {
             const id = impEvent.id;
             const savedEvent = savedEvents.get(id);
             
-            if (!savedEvent || impEvent.lastModified < savedEvent.lastModified) {
+            if (!savedEvent || impEvent.lastModified > savedEvent.lastModified) { //if not saved OR imported senare än saved
                 newEventList.set(id, impEvent);
                 savedEvents.delete(id);
-            } 
+            } else {
+                newEventList.set(id, savedEvent);
+                savedEvents.delete(id);
+            }
         } 
         console.log(newEventList.values().next().value);
     }    
