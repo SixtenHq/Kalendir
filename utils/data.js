@@ -42,6 +42,7 @@ export function importData(importedData) {
     if (tempSessionData.savedCourses == undefined) tempSessionData.savedCourses = sessionData.savedCourses;
     if (tempSessionData.excludeRules == undefined) tempSessionData.excludeRules = sessionData.excludeRules;
     sessionData = tempSessionData;
+    console.log(DataToString());
 }
 
 export function DataToString() {
@@ -54,7 +55,7 @@ export function getIcs() {
     for (const [id, event] of sessionData.calEvents) {
         ics.createEvent(event);
     }
-    for (const event of sessionData.calPreservedEvents) {
+    for (const [id, event] of sessionData.calPreservedEvents) {
         ics.createEvent(event);
     }
     return ics;
