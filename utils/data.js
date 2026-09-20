@@ -11,7 +11,7 @@ let sessionData =
         //      ignored:
         },
     excludeRules: [
-        // [rule, exeption, ignored]
+        // [matchText, ignoreText, isIgnored]
         //["ruleEX", "exeptionEX", false],
         ],
     calHeader: {
@@ -165,20 +165,16 @@ export function getExcludeRules() {
 }
 
 export function getDeformattedExcludeRules() {
-    const excludeRules = sessionData.excludeRules.map(([rules, exceptions, ignored]) => ({
-        rules: rules.split(";")
-            .map(rule => rule.trim().toLowerCase())
-            .filter(Boolean),
-        exceptions: exceptions.split(";")
-            .map(exception => exception.trim().toLowerCase())
-            .filter(Boolean),
-        ignored
+    const excludeRules = sessionData.excludeRules.map(([matchText, ignoreText, isIgnored]) => ({
+        matchText: matchText.trim().toLowerCase(),
+        ignoreText: ignoreText.trim().toLowerCase(),
+        isIgnored
     }));
     return excludeRules;
 }
 
-export function addExcludeRule(rule, exeption = "") {
-    sessionData.excludeRules.push([rule,exeption,false]);
+export function addExcludeRule(matchText, ignoreText = "") {
+    sessionData.excludeRules.push([matchText,ignoreText,false]);
 }
 
 export function removeExcludeRule(i) {

@@ -52,16 +52,16 @@ async function importCal() {
     }
     dt.setEvents(newEventList);
 }
-
+// [matchText, ignoreText, isIgnored]
 function filterCal(){
     const cal = dt.getEvents();
     const rules = dt.getDeformattedExcludeRules();
     for (const rule of rules) {
-        if (!rule.ignored) {
+        if (!rule.isIgnored && rule.matchText != "") {
             for (const event of cal.values()) {
                 const eventText = (event.description + event.summary).toLocaleLowerCase();
                 
-                if (eventText.includes(rule.rules) && !eventText.includes(rule.exeptions)){
+                if (eventText.includes(rule.matchText) && !eventText.includes(rule.ignoreText)){
                     cal.delete(event.id);
                 }
             }

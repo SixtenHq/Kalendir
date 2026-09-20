@@ -178,15 +178,15 @@ function reloadRulesList() {
     
 
     let index = 0;
-    for (const [rule, exeption, ignored] of dt.getExcludeRules()) {
-        if (rule.trim() == "" && exeption.trim() == "" && index != rules.length - 1 && rules.length != 1) {
+    for (const [matchText, ignoreText, isIgnored] of dt.getExcludeRules()) {
+        if (matchText.trim() == "" && ignoreText.trim() == "" && index != rules.length - 1 && rules.length != 1) {
             dt.removeExcludeRule(index);
             continue;
         }
         const i = index;
         const row = document.createElement("div");
         row.classList.add("courseRow")
-        if (ignored) {
+        if (isIgnored) {
             row.classList.add("gray");
         }
 
@@ -199,11 +199,11 @@ function reloadRulesList() {
         //input fält
         const input = document.createElement("input");
         input.type = "text";
-        input.value = rule;
+        input.value = matchText;
         input.classList.add("kursRuta");
         input.id = "ruleInput" + i;
         input.addEventListener("change", (event) => {
-            let newRule = [event.target.value, exeption, ignored];
+            let newRule = [event.target.value, ignoreText, isIgnored];
             dt.setExcludeRule(i,newRule);
             reload();
         });
@@ -218,11 +218,11 @@ function reloadRulesList() {
         //input fält
         const input2 = document.createElement("input");
         input2.type = "text";
-        input2.value = exeption;
+        input2.value = ignoreText;
         input2.classList.add("kursRuta");
         input2.id = "exeptionInput" + i;
         input2.addEventListener("change", (event) => {
-            let newRule = [rule, event.target.value, ignored];
+            let newRule = [matchText, event.target.value, isIgnored];
             dt.setExcludeRule(i,newRule);
             reload();
         });
@@ -235,7 +235,7 @@ function reloadRulesList() {
         button.addEventListener("click", () => {
             ignoreRule(i);
         });
-        if (ignored){
+        if (isIgnored){
             button.textContent = "Aktivera regel";
         } else {
             button.textContent = "Ignorera regel";
