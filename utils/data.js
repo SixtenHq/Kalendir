@@ -42,7 +42,6 @@ export function importData(importedData) {
     if (tempSessionData.savedCourses == undefined) tempSessionData.savedCourses = sessionData.savedCourses;
     if (tempSessionData.excludeRules == undefined) tempSessionData.excludeRules = sessionData.excludeRules;
     sessionData = tempSessionData;
-    console.log("import " + DataToString());
 }
 
 export function DataToString() {

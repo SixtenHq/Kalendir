@@ -6,8 +6,11 @@ import { parceIcs } from "./icalParcer.js";
 export async function updateCal() {
     time.start();
     await importCal();
+    console.log("import\n" + DataToString());
     filterCal();
+    console.log("filter\n" + DataToString());
     format();
+    console.log("format\n" + DataToString());
     time.end();
 }
 
