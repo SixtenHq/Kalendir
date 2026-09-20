@@ -20,7 +20,7 @@ export function parceIcs(ics = "") {
         pos = nextPos;
 
         nextPos = ics.indexOf("LAST-MODIFIED:", pos);
-        event["stamp"] = ics.slice(pos + 8, nextPos - 2);
+        event["stamp"] = toJSDate(ics.slice(pos + 8, nextPos - 2));
         pos = nextPos;
 
         nextPos = ics.indexOf("URL:", pos);

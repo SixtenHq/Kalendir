@@ -43,8 +43,8 @@ export function DataToString() {
 }
 
 export function getIcs() {
-    const ics = ical(calHeader);
-    for (const event of sessionData.calEvents) {
+    const ics = ical(sessionData.calHeader);
+    for (const [id, event] of sessionData.calEvents) {
         ics.createEvent(event);
     }
     for (const event of sessionData.calPreservedEvents) {
@@ -54,13 +54,15 @@ export function getIcs() {
 }
 
 export function getIcsEvents() {
+    const ics = ical(sessionData.calHeader);
     const icsEvents = [];
-    for (const event of sessionData.calEvents) {
+    for (const [id, event] of sessionData.calEvents) {
         icsEvents.push(ics.createEvent(event))
     }
-    for (const event of sessionData.calPreservedEvents) {
+    for (const [id, event] of sessionData.calPreservedEvents) {
         icsEvents.push(ics.createEvent(event))
     }
+    
     return icsEvents;
 }
 

@@ -1,6 +1,12 @@
-import ICAL from "ical.js";
-import { updateCal } from "../utils/calendar2.js";
+import { updateCal } from "../utils/calendar.js";
 import * as dt from "../utils/data.js";
+import { Calendar } from 'fullcalendar'
+import timeGridPlugin from 'fullcalendar/timegrid'
+import classicThemePlugin from "fullcalendar/themes/classic";
+
+import "fullcalendar/skeleton.css";
+import "fullcalendar/themes/classic/theme.css";
+import "fullcalendar/themes/classic/palette.css";
 
 let calendar;
 
@@ -32,12 +38,22 @@ async function loadCalSorce() {
 
 // skapa kalendervisning
 function createCalendar() {
-    calendar = new FullCalendar.Calendar(
+    calendar = new Calendar(
         document.getElementById("calendar"),
         {
+            plugins: [
+                timeGridPlugin,
+                classicThemePlugin
+            ],
             initialView: "timeGridWeek",
             slotMinTime: "06:00:00",
-            firstDay: 1,
+            //firstDay: 1,
+
+            headerToolbar: {
+                left: "prev,next",
+                center: "title",
+                right: ""
+            },
 
             eventClick: function(info) {
 
@@ -71,8 +87,8 @@ function createCalendar() {
 
 function updateCalView() {
     calendar.removeAllEvents();
-    const events = dt.getIcsEvents();
-    for (var event of events) {
+    const events = dt.getEvents();
+    for (var event of events.values()) {
         calendar.addEvent({
             title: event.summary,
             start: event.start,
