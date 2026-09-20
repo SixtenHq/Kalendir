@@ -27,7 +27,6 @@ async function importCal() {
         
         time.unpause();
         let importedEvents = parceIcs(ics);
-        console.log(importedEvents);
         
 
         for (const impEvent of importedEvents) {            
@@ -39,6 +38,7 @@ async function importCal() {
                 savedEvents.delete(id);
             } 
         } 
+        console.log(newEventList.values().next().value);
     }    
     // spara gamla event
     const currentTime = Date.now();
