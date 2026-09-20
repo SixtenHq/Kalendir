@@ -13,7 +13,7 @@ export async function onRequest(context) {
         second: "2-digit"
     });
 
-    console.log(date + ": " + id + "start import");
+    console.log(date + ": " + id + " start import");
 
     // Hämta kalender från D1
     const result = await env.dattabas
@@ -26,6 +26,7 @@ export async function onRequest(context) {
             status: 404
         });
     }
+    
     const data = JSON.parse(result.data);
     dt.importData(data);
     await updateCal();

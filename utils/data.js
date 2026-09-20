@@ -1,6 +1,6 @@
 import ical from "ical-generator";
 
-var sessionData = 
+let sessionData = 
 {
     id: null,
     CalSorces: [],
@@ -14,7 +14,6 @@ var sessionData =
         // [rule, exeption, ignored]
         //["ruleEX", "exeptionEX", false],
         ],
-    
     calHeader: {
         prodId: "-//Kalendir//EN",
         scale: "GREGORIAN",
@@ -30,11 +29,13 @@ export function exportData() {
 }
 
 export function importData(importedData) {
-    sessionData = importedData;
+    let tempSessionData = importedData;
     // fixa data från gamla veriationer
-    if (sessionData.CalSorces == undefined) sessionData.CalSorces = [];
-    if (sessionData.savedCourses == undefined) sessionData.savedCourses = {};
-    if (sessionData.excludeRules == undefined) sessionData.excludeRules = [];
+    if (tempSessionData.CalSorces == undefined) tempSessionData.CalSorces = sessionData.CalSorces;
+    if (tempSessionData.savedCourses == undefined) tempSessionData.savedCourses = sessionData.savedCourses;
+    if (tempSessionData.excludeRules == undefined) tempSessionData.excludeRules = sessionData.excludeRules;
+    if (tempSessionData.calEvents == undefined) tempSessionData.calEvents = sessionData.calEvents;
+    if (tempSessionData.calPreservedEvents == undefined) tempSessionData.calPreservedEvents = sessionData.calPreservedEvents;
 }
 
 export function DataToString() {

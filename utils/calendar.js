@@ -25,7 +25,7 @@ async function importCal() {
         const ics = await response.text();
         time.unpause();
         let importedEvents = parceIcs(ics);
-        const currentTime = Date.now();
+        
 
         for (const impEvent of importedEvents) {            
             const id = impEvent.id;
@@ -38,6 +38,7 @@ async function importCal() {
         } 
     }    
     // spara gamla event
+    const currentTime = Date.now();
     for (const event of savedEvents) {
         if (!newEventList.get(event.id) && event.start < currentTime) {
             preservedEvents.set(event.id, event);
