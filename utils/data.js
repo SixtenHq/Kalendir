@@ -57,7 +57,6 @@ export function getIcs() {
     for (const [id, event] of sessionData.calPreservedEvents) {
         ics.createEvent(event);
     }
-    console.log("getics "+ DataToString());
     return ics;
 }
 

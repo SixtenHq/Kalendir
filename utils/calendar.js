@@ -8,9 +8,7 @@ export async function updateCal() {
     await importCal();
     console.log("import\n" + dt.DataToString());
     filterCal();
-    console.log("filter\n" + dt.DataToString());
     format();
-    console.log("format\n" + dt.DataToString());
     time.end();
 }
 
@@ -26,6 +24,7 @@ async function importCal() {
         time.pause();
         const response = await fetch(link);
         const ics = await response.text();
+        console.log(ics);
         time.unpause();
         let importedEvents = parceIcs(ics);
         
