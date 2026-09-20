@@ -35,7 +35,19 @@ export function importData(importedData) {
     let tempSessionData = structuredClone(importedData);
 
     tempSessionData.calEvents = new Map(importedData.calEvents);
+    for (const [id, event] of tempSessionData.calEvents) {
+        event.start = new Date(event.start);
+        event.end = new Date(event.end);
+        event.stamp = new Date(event.stamp);
+        event.lastModified = new Date(event.lastModified);
+    }
     tempSessionData.calPreservedEvents = new Map(importedData.calPreservedEvents);
+    for (const [id, event] of tempSessionData.calPreservedEvents) {
+        event.start = new Date(event.start);
+        event.end = new Date(event.end);
+        event.stamp = new Date(event.stamp);
+        event.lastModified = new Date(event.lastModified);
+    }
 
     // fixa data från gamla veriationer
     if (tempSessionData.CalSorces == undefined) tempSessionData.CalSorces = sessionData.CalSorces;
