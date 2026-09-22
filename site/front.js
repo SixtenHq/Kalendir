@@ -47,7 +47,7 @@ function createCalendar() {
             ],
             initialView: "timeGridWeek",
             slotMinTime: "06:00:00",
-            //firstDay: 1,
+            firstDay: 1,
 
             headerToolbar: {
                 left: "prev,next",
