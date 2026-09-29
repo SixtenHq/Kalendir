@@ -94,23 +94,21 @@ function formatSummary(event) {
     let i = 0;
     for (const part of descriptionParts) {
         if (part.startsWith("Kurs: ")) {
-            let tempCourseName = part.slice(6).trim(); // get name
             const courseCode = summaryParts[i]; // get coresponding corse code
             const savedCourse = dt.gettSavedCourse(courseCode);
-            if (savedCourse && savedCourse.customName) {
-                tempCourseName = savedCourse.customName;
-            } else if (savedCourse) {
-                tempCourseName = savedCourse.name;
+            if (savedCourse) {
+                if (savedCourse.ignored) {
+                    i++;
+                    continue;
+                } else if (savedCourse.customName){
+                    courseName = savedCourse.customName;
+                } else {
+                    courseName = part.slice(6).trim(); // get name
+                }
             } else {
-                dt.addSavedCourse(courseCode,tempCourseName);
+                dt.addSavedCourse(courseCode, part.slice(6).trim());
             }
-
-            if ((savedCourse && !savedCourse.ignored) || !savedCourse) {
-                courseName = tempCourseName;
-            }
-            
             i++;
-
         } else if (part.startsWith("Undervisningstyp: ")) {
             type = part.slice(17).trim(); // get type
         }
