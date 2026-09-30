@@ -7,9 +7,7 @@ export async function updateCal() {
     time.start();
     await importCal();
     filterCal();
-    console.log("filter\n" + dt.DataToString());
     format();
-    console.log("format\n" + dt.DataToString());
     time.end();
 }
 
@@ -22,11 +20,12 @@ async function importCal() {
     
     //import new events
     for (const link of CalSorceLinks) {
-        time.pause();
+        //time.pause();
         const response = await fetch(link);
         const ics = await response.text();
         
-        time.unpause();
+        //time.unpause();
+        
         let importedEvents = parceIcs(ics);
         
 
@@ -103,10 +102,11 @@ function formatSummary(event) {
                 } else if (savedCourse.customName){
                     courseName = savedCourse.customName;
                 } else {
-                    courseName = part.slice(6).trim(); // get name
+                    courseName = savedCourse.courseName
                 }
             } else {
-                dt.addSavedCourse(courseCode, part.slice(6).trim());
+                courseName = part.slice(6).trim(); // get name
+                dt.addSavedCourse(courseCode, courseName);
             }
             i++;
         } else if (part.startsWith("Undervisningstyp: ")) {
@@ -117,7 +117,9 @@ function formatSummary(event) {
     if (courseName != "" && type != "") {
         event.summary = courseName + " " + type;
     } else {
-        console.log("faild to make summary");
+        console.log("faild to make summary: " + courseName + ", " + type);
+        //console.log(event.description);
+        //console.log(descriptionParts);
         event.summary = summaryParts.join(" ");
     }       
 }

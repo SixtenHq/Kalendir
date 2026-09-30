@@ -45,36 +45,41 @@ export function parceIcs(ics = "") {
 
         events.push(event);
     }
-    
+    time.CountEnd();
     return events;
     
 }
 
-
+import * as time from "./time.js";
 function unescapeICS(ics,startPos,endPos) {
     let cuts = [startPos -1];
-
-    for (let pos = startPos; pos < endPos; pos++) {
-        if (ics[pos] == "\\" && pos + 1 < endPos) {
-            const nextChar = ics[++pos];
-
-            if (nextChar == ",") cuts.push(pos - 1);
-            else if (nextChar == ";") cuts.push(pos - 1);
+    for (let pos = startPos; pos < endPos - 1; pos++) {
+        if (ics[pos] == "\\" && ics[pos + 1] == ",") {
+            cuts.push(pos);
         } else if (ics[pos] == "\r" && ics[pos + 1] == "\n") {
-            cuts.push(pos - 1);
             cuts.push(pos);
             cuts.push(pos + 1);
             cuts.push(pos + 2);
         }
     }
     cuts.push(endPos);
-
+    
+    time.countStart();
+    /*const data = new Uint16Array(endPos - startPos - cuts.length);
+    for (let i = 0; i < data.length; i++) {
+        data[i] = ics.charCodeAt(startPos + i);
+    }
+    let result = String.fromCharCode(...data);*/
+    
     let result = "";
     for (let i = 0; i < cuts.length -1; i++) {
         result += ics.slice(cuts[i] + 1, cuts[i + 1]);
     }
+    time.countStop();
+    
     result = result.replaceAll("\\n","\n");
     
+    //console.log(result);
     return result;
 }
 
