@@ -38,3 +38,15 @@ body {
 .gray {
     opacity: 0.5;
 }
+
+.striped-event {
+    border: 2px solid #222 !important;
+
+    background-image: repeating-linear-gradient(
+        135deg,
+        transparent 0px,
+        transparent 6px,
+        rgba(255, 255, 255, 0.4) 6px,
+        rgba(255, 255, 255, 0.4) 12px
+    ) !important;
+}

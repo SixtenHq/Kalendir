@@ -1,186 +1,202 @@
 import ical from "ical-generator";
 
-let sessionData = 
+const header =
 {
-    id: null,
-    CalSorces: [],
-    savedCourses: {
-        // code:
+    prodId: "-//Kalendir//EN",
+    scale: "GREGORIAN",
+    name: "Kalendir :D",
+    description: "Kalender redigerad av Kalendir"
+};
+
+let sessionData =
+{
+    userId: null,
+    sorces: [],
+    courses: {
+        // code: {
         //      name: 
         //      customName: 
         //      ignored:
-        },
-    excludeRules: [
-        // [matchText, ignoreText, isIgnored]
-        //["ruleEX", "exeptionEX", false],
-        ],
-    calHeader: {
-        prodId: "-//Kalendir//EN",
-        scale: "GREGORIAN",
-        name: "Kalendir :D",
-        description: "Kalender redigerad av Kalendir"
+        // }
     },
-    calEvents: new Map(),
-    calPreservedEvents: new Map(),
+    futureEvents: new Map(),
+    pastEvents: new Map(),
+    categories: [
+        {
+            index: 0,
+            name: "default",
+            colour: "yellow",
+            rules: [{
+                matchText: "",
+                ignoreText: "",
+            }]
+        },
+        {
+            index: 1,
+            name: "hidden",
+            colour: "gray",
+            rules: {
+                matchText: "dialog",
+                ignoreText: "",
+            }
+        }
+    ]
 };
 
 export function exportData() {
     let tempSessionData = structuredClone(sessionData);
-    tempSessionData.calEvents = Array.from(sessionData.calEvents);
-    tempSessionData.calPreservedEvents = Array.from(sessionData.calPreservedEvents);
+    tempSessionData.futureEvents = Array.from(sessionData.futureEvents);
+    tempSessionData.pastEvents = Array.from(sessionData.pastEvents);
     return JSON.stringify(tempSessionData);
 }
 
 export function importData(importedData) {
     let tempSessionData = structuredClone(importedData);
 
-    tempSessionData.calEvents = new Map(importedData.calEvents);
-    for (const [id, event] of tempSessionData.calEvents) {
+    tempSessionData.futureEvents = new Map(importedData.futureEvents);
+    for (const [id, event] of tempSessionData.futureEvents) {
         event.start = new Date(event.start);
         event.end = new Date(event.end);
         event.stamp = new Date(event.stamp);
         event.lastModified = new Date(event.lastModified);
     }
-    tempSessionData.calPreservedEvents = new Map(importedData.calPreservedEvents);
-    for (const [id, event] of tempSessionData.calPreservedEvents) {
+    tempSessionData.pastEvents = new Map(importedData.pastEvents);
+    for (const [id, event] of tempSessionData.pastEvents) {
         event.start = new Date(event.start);
         event.end = new Date(event.end);
         event.stamp = new Date(event.stamp);
         event.lastModified = new Date(event.lastModified);
     }
 
-    // fixa data från gamla veriationer
-    if (tempSessionData.CalSorces == undefined) tempSessionData.CalSorces = sessionData.CalSorces;
-    if (tempSessionData.savedCourses == undefined) tempSessionData.savedCourses = sessionData.savedCourses;
-    if (tempSessionData.excludeRules == undefined) tempSessionData.excludeRules = sessionData.excludeRules;
     sessionData = tempSessionData;
 }
 
-export function DataToString() {
-    //console.log(sessionData.calEvents.values().next().value);
-    return "id: " + sessionData.id + "\n" + "cal sorces: " + sessionData.CalSorces + "\n" + "saved corses: " + sessionData.savedCourses + "\n" + "excluderules: " + sessionData.excludeRules + "\n" + "number of events: " + sessionData.calEvents.size;
-}
-
-export function getIcs() {
-    const ics = ical(sessionData.calHeader);
-    for (const [id, event] of sessionData.calEvents) {
-        ics.createEvent(event);
-    }
-    for (const [id, event] of sessionData.calPreservedEvents) {
-        ics.createEvent(event);
+export function getIcs(categorieName) {
+    tempHeader = structuredClone(header);
+    tempHeader.name = categorieName;
+    const ics = ical(tempHeader);
+    const events = getEvents(false);
+    for (const [id, event] of events) {
+        if (event.categorie == categorieName) {
+            ics.createEvent(event);
+        }
     }
     return ics;
 }
 
-export function getIcsEvents() {
-    const ics = ical(sessionData.calHeader);
-    const icsEvents = [];
-    for (const [id, event] of sessionData.calEvents) {
-        icsEvents.push(ics.createEvent(event))
+// ---------- UserId ----------
+export function getUserId() {
+    return sessionData.userId;
+}
+
+export function setUserId(newId) {
+    sessionData.userId = newId;
+}
+
+// ---------- Events ----------
+export function getEvents(isServer) {
+    if (isServer) {
+        return sessionData.futureEvents;
+    } else {
+        return new Map([...sessionData.futureEvents, ...sessionData.pastEvents]);
     }
-    for (const [id, event] of sessionData.calPreservedEvents) {
-        icsEvents.push(ics.createEvent(event))
-    }
-    
-    return icsEvents;
 }
 
-//-----
-export function getId() {
-    return sessionData.id;
+export function getFutureEvents() {
+    return sessionData.futureEvents;
 }
 
-export function setId(newId) {
-    sessionData.id = newId;
-}
-//-----
-export function getEvents() {
-    return sessionData.calEvents;
+export function getPastEvents() {
+    return sessionData.pastEvents;
 }
 
-export function setEvents(events) {
-    sessionData.calEvents = events;
+export function setFutureEvents(events) {
+    sessionData.futureEvents = events;
 }
 
-//-----
-export function getPreservedEvents() {
-    return sessionData.calPreservedEvents;
+export function setPastEvents(events) {
+    sessionData.pastEvents = events;
 }
 
-export function setPreservedEvents(events) {
-    sessionData.calPreservedEvents = events;
+// ---------- Sorces ----------
+export function getSorces() {
+    return sessionData.sorces;
 }
 
-//-----
-export function setHeader(header) {
-    sessionData.calHeader = header;
+export function addSorce(source) {
+    sessionData.sorces.push(source);
 }
 
-export function getHeader() {
-    return sessionData.calHeader;
+export function sorcesIncludes(source) {
+    return sessionData.sorces.includes(source);
 }
 
-export function hasIcs() {
-    return (false || (sessionData.ics))
+// ---------- Courses ----------
+export function getCourses() {
+    return sessionData.courses;
 }
 
-export function clearIcs() {
-    const cal = getCal();
-    const events = cal.getAllSubcomponents("vevent");
-    for (const event of events) {
-        cal.removeSubcomponent(event);
-    }
-    setCal(cal);
-}
-//-----
-export function getCalSorces() {
-    return sessionData.CalSorces;
+export function getCourse(courseCode) {
+    return sessionData.courses[courseCode];
 }
 
-export function addCalSorce(source) {
-    sessionData.CalSorces.push(source);
-}
-
-export function CalSorcesIncludes(source) {
-    return sessionData.CalSorces.includes(source);
-}
-//-----
-export function gettSavedCourses() {
-    return sessionData.savedCourses;
-}
-
-export function gettSavedCourse(courseCode) {
-    return sessionData.savedCourses[courseCode];
-}
-
-export function addSavedCourse(courseCode, name) {
-    sessionData.savedCourses[courseCode] = {
+export function addCourse(courseCode, name) {
+    sessionData.courses[courseCode] = {
         name: name,
         ignored: false
     };
 }
-//-----
-export function getExcludeRules() {
-    return sessionData.excludeRules;
+
+// ---------- Categories ----------
+export function getCategories() {
+    return sessionData.categories;
 }
 
-export function getDeformattedExcludeRules() {
-    const excludeRules = sessionData.excludeRules.map(([matchText, ignoreText, isIgnored]) => ({
-        matchText: matchText.trim().toLowerCase(),
-        ignoreText: ignoreText.trim().toLowerCase(),
-        isIgnored
+export function newCategorie() {
+    sessionData.categories.push([{
+        name: "",
+        colour: "",
+        rules: [{
+            matchText: "",
+            ignoreText: "",
+        }]
+    }]);
+}
+
+export function removeCategorie(i) {
+    sessionData.categories.splice(i, 1);
+}
+
+export function setCategorieName(catagory, name) {
+    sessionData.categories[catagory].name = name;
+}
+
+export function setCategorieColour(catagory, colour) {
+    sessionData.categories[catagory].colour = colour;
+}
+
+// ---------- Categories/Rules ----------
+export function getRules(catagory) {
+    return sessionData.categories[catagory].rules;
+}
+
+export function getDeformattedRules(i) {
+    const rules = sessionData.categories[catagory].rules.map((rule) => ({
+        matchText: rule.matchText.trim().toLowerCase(),
+        ignoreText: rule.ignoreText.trim().toLowerCase(),
     }));
-    return excludeRules;
+    return rules;
 }
 
-export function addExcludeRule(matchText, ignoreText = "") {
-    sessionData.excludeRules.push([matchText,ignoreText,false]);
+export function addRule(catagory, matchText, ignoreText = "") {
+    sessionData.categories[catagory].rules.push({
+        matchText: matchText,
+        ignoreText: ignoreText
+    });
 }
 
-export function removeExcludeRule(i) {
-    sessionData.excludeRules.splice(i,1);
+export function removeRule(catagory,i) {
+    sessionData.categories[catagory].rules.splice(i, 1);
 }
 
-export function setExcludeRule(i, input) {
-    sessionData.excludeRules[i] = input;
-}
+

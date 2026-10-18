@@ -1,7 +1,7 @@
 import { updateCal } from "../utils/calendar.js";
 import * as dt from "../utils/data.js";
-import { Calendar } from 'fullcalendar'
-import timeGridPlugin from 'fullcalendar/timegrid'
+import { Calendar } from 'fullcalendar';
+import timeGridPlugin from 'fullcalendar/timegrid';
 import classicThemePlugin from "fullcalendar/themes/classic";
 
 import "fullcalendar/skeleton.css";
@@ -10,8 +10,8 @@ import "fullcalendar/themes/classic/palette.css";
 
 let calendar;
 
-export async function reload() {
-    await updateCal();
+export async function reload(doImport) {
+    await updateCal(doImport);
     reloadCourseList();
     reloadRulesList()
     updateCalView();
@@ -25,13 +25,13 @@ async function loadCalSorce() {
         console.log("fel sorce link!");
         return;
     }
-    if (dt.CalSorcesIncludes(CalSorceLink)) {
+    if (dt.sorcesIncludes(CalSorceLink)) {
         console.log("redan inlagd");
         return;
     }
-    dt.addCalSorce(CalSorceLink);
+    dt.addSorce(CalSorceLink);
     
-    reload();
+    reload(true);
 }
 
 // ------------------ kalender UI -------------------
@@ -56,27 +56,17 @@ function createCalendar() {
             },
 
             eventClick: function(info) {
+                const calBox = info.event;
+                const event = dt.getEvents().get(calBox.id);
 
-                const state = ((info.event.extendedProps.state ?? 0) + 1) % 3;
+                event.categorie++;
+                const categories = dt.getCategories();
+                if (event.categorie >= categories.length) event.categorie = 0;
 
-                switch (state) {
-                    case 0:
-                        info.event.setProp("backgroundColor", "");
-                        info.event.setProp("borderColor", "");
-                        break;
+                calBox.setProp("color", categories[event.categorie].colour);
+                if (event.categorie == 1) calBox.setProp("className", "striped-event");
+                else calBox.setProp("className", "");
                 
-                    case 1:
-                        info.event.setProp("backgroundColor", "gray");
-                        info.event.setProp("borderColor", "gray");
-                        break;
-                
-                    case 2:
-                        info.event.setProp("backgroundColor", "red");
-                        info.event.setProp("borderColor", "red");
-                        break;
-                }
-
-                info.event.setExtendedProp("state", state);
             
             }           
         }
@@ -93,9 +83,7 @@ function updateCalView() {
             title: event.summary,
             start: event.start,
             end: event.end,
-            extendedProps: {
-                originalEvent: event
-            }
+            id: event.id
         });
     }
 }
@@ -106,7 +94,7 @@ function reloadCourseList() {
     const corseListContainer = document.getElementById("courseList");
     corseListContainer.innerHTML = "";
 
-    for (const [courseCode, courseInfo] of Object.entries(dt.gettSavedCourses())) {
+    for (const [courseCode, courseInfo] of Object.entries(dt.getCourses())) {
         const row = document.createElement("div");
         row.classList.add("courseRow")
         if (courseInfo.ignored) {
@@ -152,13 +140,13 @@ function reloadCourseList() {
 }
 
 function ignoreCourse(courseCode) {
-    var course = dt.gettSavedCourse(courseCode);
+    var course = dt.getCourse(courseCode);
     if (course.ignored){
         course.ignored = false;
     } else {
         course.ignored = true;
     }
-    reload();
+    reload(false);
 }
 
 // ------------------ Rules -------------------
@@ -205,7 +193,7 @@ function reloadRulesList() {
         input.addEventListener("change", (event) => {
             let newRule = [event.target.value, ignoreText, isIgnored];
             dt.setExcludeRule(i,newRule);
-            reload();
+            reload(false);
         });
         row.appendChild(input);
 
@@ -224,7 +212,7 @@ function reloadRulesList() {
         input2.addEventListener("change", (event) => {
             let newRule = [matchText, event.target.value, isIgnored];
             dt.setExcludeRule(i,newRule);
-            reload();
+            reload(false);
         });
         row.appendChild(input2);
 
@@ -255,7 +243,7 @@ function ignoreRule(i) {
     } else {
         dt.getExcludeRules()[i][2] = true;
     }
-    reload();
+    reload(false);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -264,10 +252,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const corseListContainer = document.getElementById("courseList");
     corseListContainer.addEventListener("change", (event) => {
         if (event.target.id.startsWith("input")) {
-            const course = dt.gettSavedCourses()[event.target.id.slice(5)]
+            const course = dt.getCourses()[event.target.id.slice(5)]
             if (course) {
                 course.customName = event.target.value;
-                reload();
+                reload(false);
             }
         } 
     });

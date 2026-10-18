@@ -3,37 +3,35 @@ import * as time from "./time.js";
 import { parceIcs } from "./icalParcer.js";
 
 
-export async function updateCal() {
+export async function updateCal(doImport, isServer = false) {
     time.start();
-    await importCal();
-    filterCal();
-    format();
+    if (doImport) await importCal();
+    filterCal(isServer);
+    format(isServer);
     time.end();
 }
 
 async function importCal() {
     
-    const CalSorceLinks = dt.getCalSorces();
-    const savedEvents = dt.getEvents();
+    const sorces = dt.getSorces();
+    const savedEvents = dt.getFutureEvents();
     const newEventList = new Map();
-    const preservedEvents = dt.getPreservedEvents();
+    const pastEvents = dt.getPastEvents();
     
     //import new events
-    for (const link of CalSorceLinks) {
-        //time.pause();
+    for (const link of sorces) {
+        time.pause();
         const response = await fetch(link);
         const ics = await response.text();
-        
-        //time.unpause();
+        time.unpause();
         
         let importedEvents = parceIcs(ics);
-        
 
         for (const impEvent of importedEvents) {            
             const id = impEvent.id;
             const savedEvent = savedEvents.get(id);
             
-            if (!savedEvent || impEvent.lastModified > savedEvent.lastModified) { //if not saved OR imported senare än saved
+            if (!savedEvent || impEvent.lastModified > savedEvent.lastModified) { //if not saved OR modefied since last save
                 newEventList.set(id, impEvent);
                 savedEvents.delete(id);
             } else {
@@ -46,30 +44,37 @@ async function importCal() {
     const currentTime = Date.now();
     for (const event of savedEvents) {
         if (!newEventList.get(event.id) && event.start < currentTime) {
-            preservedEvents.set(event.id, event);
+            pastEvents.set(event.id, event);
         }
     }
-    dt.setEvents(newEventList);
+    dt.setFutureEvents(newEventList);
 }
-// [matchText, ignoreText, isIgnored]
-function filterCal(){
-    const cal = dt.getEvents();
-    const rules = dt.getDeformattedExcludeRules();
-    for (const rule of rules) {
-        if (!rule.isIgnored && rule.matchText != "") {
-            for (const event of cal.values()) {
-                const eventText = (event.description + event.summary).toLocaleLowerCase();
-                
-                if (eventText.includes(rule.matchText) && !eventText.includes(rule.ignoreText)){
-                    cal.delete(event.id);
+
+function filterCal(isServer){
+    const events = dt.getEvents(isServer);
+    let remainingEvents  = structuredClone(events);
+    const categories = dt.getCategories();
+    for (const categorie of categories) {
+        const rules = dt.getDeformattedRules(categorie.index);
+        for (const rule of rules) {
+            if (rule.matchText != "") {
+                for (const event of remainingEvents.values()) {
+                    const eventText = (event.description + event.summary).toLocaleLowerCase();
+
+                    if (eventText.includes(rule.matchText) && !eventText.includes(rule.ignoreText)){
+                        remainingEvents.delete(event.id);
+                        events.get(event.id).categorie = categorie.index;
+                    } else {
+                        events.get(event.id).categorie = 0;
+                    }
                 }
             }
         }
     }
 }
 
-function format() {
-    const events = dt.getEvents();
+function format(isServer) {
+    const events = dt.getEvents(isServer);
     for (let [id, event] of events) {
         if (!isEdited(event)) {
             event.description = "Orginal title: " + event.summary + "\n" + event.description;
@@ -94,19 +99,19 @@ function formatSummary(event) {
     for (const part of descriptionParts) {
         if (part.startsWith("Kurs: ")) {
             const courseCode = summaryParts[i]; // get coresponding corse code
-            const savedCourse = dt.gettSavedCourse(courseCode);
+            const savedCourse = dt.getCourse(courseCode);
             if (savedCourse) {
                 if (savedCourse.ignored) {
                     i++;
                     continue;
-                } else if (savedCourse.customName){
+                } else if (savedCourse.customName != undefined){
                     courseName = savedCourse.customName;
                 } else {
-                    courseName = savedCourse.courseName
+                    courseName = savedCourse.name;
                 }
             } else {
                 courseName = part.slice(6).trim(); // get name
-                dt.addSavedCourse(courseCode, courseName);
+                dt.addCourse(courseCode, courseName);
             }
             i++;
         } else if (part.startsWith("Undervisningstyp: ")) {

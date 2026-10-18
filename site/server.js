@@ -7,18 +7,18 @@ export async function uploadCal() {
     console.log(dt.exportData());
     console.log(dt.DataToString());
 
-    if (!dt.getId()) {
-        dt.setId(crypto.randomUUID());
-        console.log("new id: " + dt.getId());
+    if (!dt.getUserId()) {
+        dt.setUserId(crypto.randomUUID());
+        console.log("new id: " + dt.getUserId());
     } 
 
     var packet = JSON.stringify({
-        id: dt.getId(),
+        id: dt.getUserId(),
         data: dt.exportData()
     })
 
     const url = new URL("https://kalendir.pages.dev/import");
-    url.searchParams.set("id", dt.getId());
+    url.searchParams.set("id", dt.getUserId());
     console.log(url.toString());
     document.getElementById("kalendirLinkLabel").textContent = url.toString();
 

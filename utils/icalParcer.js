@@ -43,14 +43,14 @@ export function parceIcs(ics = "") {
         event["description"] = unescapeICS(ics, pos + 12, nextPos - 2);
         pos = nextPos;
 
+        event["categorie"] = 0;
+
         events.push(event);
     }
-    time.CountEnd();
     return events;
     
 }
 
-import * as time from "./time.js";
 function unescapeICS(ics,startPos,endPos) {
     let cuts = [startPos -1];
     for (let pos = startPos; pos < endPos - 1; pos++) {
@@ -64,22 +64,13 @@ function unescapeICS(ics,startPos,endPos) {
     }
     cuts.push(endPos);
     
-    time.countStart();
-    /*const data = new Uint16Array(endPos - startPos - cuts.length);
-    for (let i = 0; i < data.length; i++) {
-        data[i] = ics.charCodeAt(startPos + i);
-    }
-    let result = String.fromCharCode(...data);*/
-    
     let result = "";
     for (let i = 0; i < cuts.length -1; i++) {
         result += ics.slice(cuts[i] + 1, cuts[i + 1]);
     }
-    time.countStop();
     
     result = result.replaceAll("\\n","\n");
     
-    //console.log(result);
     return result;
 }
 
