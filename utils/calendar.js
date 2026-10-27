@@ -9,6 +9,7 @@ export async function updateCal(doImport, isServer = false) {
     filterCal(isServer);
     format(isServer);
     time.end();
+    
 }
 
 async function importCal() {

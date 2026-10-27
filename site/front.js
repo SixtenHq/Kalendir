@@ -13,7 +13,7 @@ let calendar;
 export async function reload(doImport) {
     await updateCal(doImport);
     reloadCourseList();
-    reloadRulesList()
+    //reloadRulesList()
     updateCalView();
 }
 
@@ -150,7 +150,7 @@ function ignoreCourse(courseCode) {
 }
 
 // ------------------ Rules -------------------
-
+/*
 function reloadRulesList() {
     const RulesListContainer = document.getElementById("rulesList");
     RulesListContainer.innerHTML = "";
@@ -244,7 +244,7 @@ function ignoreRule(i) {
         dt.getExcludeRules()[i][2] = true;
     }
     reload(false);
-}
+}*/
 
 document.addEventListener("DOMContentLoaded", () => {
     createCalendar();

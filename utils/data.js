@@ -35,10 +35,10 @@ let sessionData =
             index: 1,
             name: "hidden",
             colour: "gray",
-            rules: {
+            rules: [{
                 matchText: "dialog",
                 ignoreText: "",
-            }
+            }]
         }
     ]
 };
@@ -180,7 +180,7 @@ export function getRules(catagory) {
     return sessionData.categories[catagory].rules;
 }
 
-export function getDeformattedRules(i) {
+export function getDeformattedRules(catagory) {
     const rules = sessionData.categories[catagory].rules.map((rule) => ({
         matchText: rule.matchText.trim().toLowerCase(),
         ignoreText: rule.ignoreText.trim().toLowerCase(),
