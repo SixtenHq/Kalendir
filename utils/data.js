@@ -154,14 +154,16 @@ export function getCategories() {
 }
 
 export function newCategorie() {
-    sessionData.categories.push([{
+    const size = sessionData.categories.length;
+    sessionData.categories.push({
+        index: size,
         name: "",
         colour: "",
         rules: [{
             matchText: "",
             ignoreText: "",
         }]
-    }]);
+    });
 }
 
 export function removeCategorie(i) {

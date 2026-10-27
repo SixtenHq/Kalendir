@@ -14,7 +14,7 @@ export async function reload(doImport) {
     await updateCal(doImport);
     reloadCourseList();
     reloadExcludeList();
-    //reloadRulesList()
+    reloadCategorieList();
     updateCalView();
 }
 
@@ -105,6 +105,8 @@ function reloadCourseList() {
     const corseListContainer = document.getElementById("courseList");
     corseListContainer.innerHTML = "";
 
+    corseListContainer.appendChild(newTitle("Corse options"));
+
     for (const [courseCode, courseInfo] of Object.entries(dt.getCourses())) {
         const row = document.createElement("div");
         row.classList.add("courseRow")
@@ -113,37 +115,31 @@ function reloadCourseList() {
         }
 
         // lable
-        const label = document.createElement("label");
-        label.textContent = courseCode + ": "+ courseInfo.name;
-        
-        label.classList.add("lableSize");
-        row.appendChild(label);
+        row.appendChild(newLable(courseCode + ": "+ courseInfo.name));
 
         // input fält
         const input = document.createElement("input");
         input.type = "text";
-        if (courseInfo.customName) {
-            input.value = courseInfo.customName;
-        } 
-        input.placeholder = "Eget namn"
+        if (courseInfo.customName) input.value = courseInfo.customName;
+        input.placeholder = "Custom name"
         input.classList.add("kursRuta");
-        input.id = "input" + courseCode;
-
+        input.addEventListener("change", () => {
+            const course = dt.getCourses()[courseCode];
+            if (course) {
+                course.customName = input.value;
+                reload(false);
+            }
+        });
         row.appendChild(input);
 
         // knapp
         const button = document.createElement("button");
-        
-        button.id = "button" + courseCode;
+        if (courseInfo.ignored) button.textContent = "My course";
+        else button.textContent = "Not my course";
         button.addEventListener("click", () => {
             ignoreCourse(courseCode);
         });
-        if (courseInfo.ignored){
-            button.textContent = "Min kurs";
-        } else {
-            button.textContent = "Inte min kurs";
-        }
-
+        
         row.appendChild(button);
         
         corseListContainer.appendChild(row);
@@ -160,6 +156,7 @@ function ignoreCourse(courseCode) {
     reload(false);
 }
 
+// --------- ecclude list ----------------
 
 function reloadExcludeList() {
     const excludeListContainer = document.getElementById("excludeList");
@@ -167,42 +164,35 @@ function reloadExcludeList() {
     const excludeIndex = 0;
     const rules = dt.getRules(excludeIndex);
 
+    excludeListContainer.appendChild(newTitle("Exclusion options"));
+
     rules.forEach((rule, i) => {
         const row = document.createElement("div");
         row.classList.add("courseRow")
         //lable
-        const label = document.createElement("label");
-        label.textContent = "Exclude if contains:";
-        label.classList.add("lableSize");
-        row.appendChild(label);
+        row.appendChild(newLable("Exclude if contains:"));
+
         //input fält
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = rule.matchText;
-        input.classList.add("kursRuta");
+        const input = newInput(rule.matchText);
         input.addEventListener("change", () => {
             dt.setRule(excludeIndex, i, input.value, rule.ignoreText);
             reload(false);
         });
         row.appendChild(input);
+
         //lable
-        const label2 = document.createElement("label");
-        label2.textContent = "But not if contains:";
-        label2.classList.add("lableSize");
-        row.appendChild(label2);
+        row.appendChild(newLable("But not if contains:"));
+
         //input fält
-        const input2 = document.createElement("input");
-        input2.type = "text";
-        input2.value = rule.ignoreText;
-        input2.classList.add("kursRuta");
+        const input2 = newInput(rule.ignoreText);
         input2.addEventListener("change", () => {
             dt.setRule(excludeIndex, i, rule.matchText, input2.value);
             reload(false);
         });
         row.appendChild(input2);
+
         //knapp
-        const button = document.createElement("button");
-        button.textContent = "Remove";
+        const button = newButton("Remove");
         button.addEventListener("click", () => {
             dt.removeRule(excludeIndex, i);
             reload(false);
@@ -211,8 +201,7 @@ function reloadExcludeList() {
 
         excludeListContainer.appendChild(row);
     });
-    const button = document.createElement("button");
-    button.textContent = "Add exclusion rule";
+    const button = newButton("Add exclusion rule");
     button.addEventListener("click", () => {
         dt.addRule(excludeIndex,"","");
         reload(false);
@@ -220,120 +209,163 @@ function reloadExcludeList() {
     excludeListContainer.appendChild(button);
 }
 
-function reloadCategoriesList() {
+//---------- catagory list ---------------
 
-
-}
-
-// ------------------ Rules -------------------
-/*
-function reloadRulesList() {
-    const RulesListContainer = document.getElementById("rulesList");
-    RulesListContainer.innerHTML = "";
+function reloadCategorieList() {
+    const categorieListContainer = document.getElementById("categorieList");
+    categorieListContainer.innerHTML = "";
     
-    let rules = dt.getExcludeRules();
-    if (!rules[0]) {
-        dt.addExcludeRule("","",false);
-    }
-    if (rules[rules.length - 1][0].trim() != "") {
-        dt.addExcludeRule("","",false);
-    }
-    
-    
+    const categories = dt.getCategories();
 
-    let index = 0;
-    for (const [matchText, ignoreText, isIgnored] of dt.getExcludeRules()) {
-        if (matchText.trim() == "" && ignoreText.trim() == "" && index != rules.length - 1 && rules.length != 1) {
-            dt.removeExcludeRule(index);
-            continue;
-        }
-        const i = index;
-        const row = document.createElement("div");
-        row.classList.add("courseRow")
-        if (isIgnored) {
-            row.classList.add("gray");
-        }
+    categorieListContainer.appendChild(newTitle("Categorie options"));
 
+    for (const catagorie of categories) {
+        if (catagorie.index < 2) continue;
+
+
+        const startRow = document.createElement("div");
+        startRow.classList.add("courseRow");
         //lable
-        const label = document.createElement("label");
-        label.textContent = "Exclude if contains:";
-        label.classList.add("lableSize");
-        row.appendChild(label);
+        startRow.appendChild(newLable("Catagorie name:"));
 
         //input fält
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = matchText;
-        input.classList.add("kursRuta");
-        input.id = "ruleInput" + i;
-        input.addEventListener("change", (event) => {
-            let newRule = [event.target.value, ignoreText, isIgnored];
-            dt.setExcludeRule(i,newRule);
+        const startinput = newInput(catagorie.name);
+        startinput.addEventListener("change", () => {
+            dt.setCategorieName(catagorie.index, startinput.value)
             reload(false);
         });
-        row.appendChild(input);
+        startRow.appendChild(startinput);
 
         //lable
-        const label2 = document.createElement("label");
-        label2.textContent = "But not if contains:";
-        label2.classList.add("lableSize");
-        row.appendChild(label2);
+        startRow.appendChild(newLable("Select color:"));
 
-        //input fält
-        const input2 = document.createElement("input");
-        input2.type = "text";
-        input2.value = ignoreText;
-        input2.classList.add("kursRuta");
-        input2.id = "exeptionInput" + i;
-        input2.addEventListener("change", (event) => {
-            let newRule = [matchText, event.target.value, isIgnored];
-            dt.setExcludeRule(i,newRule);
-            reload(false);
-        });
-        row.appendChild(input2);
+        //färg välgare
+        const colournames = ["Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink"];
+        const colours = ["#FF6467", "#FF8904", "#FDC745", "#05DF72", "#21BCFF", "#A684FF", "#ED6AFF"];
+        const dropdown = document.createElement("select");
+        for (let i = 0; i < colours.length; i++){
+            const option = document.createElement("option");
+            option.value = colours[i];
+            option.textContent = colournames[i];
+            dropdown.appendChild(option);
+        }
+        dropdown.value = catagorie.colour;
+        dropdown.addEventListener("change", () => {
+                dt.setCategorieColour(catagorie.index, dropdown.value);
+                reload(false);
+            });
+        startRow.appendChild(dropdown);
+        console.log(catagorie);
 
+        //info
+        startRow.appendChild(newInfo("The colors are only on this site, they will not be applied for your calendar"));
         //knapp
-        const button = document.createElement("button");
-        
-        button.id = "ruleButton" + i;
-        button.addEventListener("click", () => {
-            ignoreRule(i);
+        const startbutton = newButton("Remove catagorie");
+        startbutton.addEventListener("click", () => {
+            dt.removeCategorie(catagorie.index);
+            reload(false);
         });
-        if (isIgnored){
-            button.textContent = "Aktivera regel";
-        } else {
-            button.textContent = "Ignorera regel";
-        }
+        startRow.appendChild(startbutton);
+        categorieListContainer.appendChild(startRow);
 
-        row.appendChild(button);
-        
-        RulesListContainer.appendChild(row);
-        index++;
+
+
+        const rules = catagorie.rules;
+
+        rules.forEach((rule, i) => {
+            const row = document.createElement("div");
+            row.classList.add("courseRow");
+            //lable
+            row.appendChild(newLable("Add to catagorie if contains:"));
+            //input fält
+            const input = newInput(rule.matchText);
+            input.addEventListener("change", () => {
+                dt.setRule(catagorie.index, i, input.value, rule.ignoreText);
+                reload(false);
+            });
+            row.appendChild(input);
+            //lable
+            row.appendChild(newLable("But not if contains:"));
+            //input fält
+            const input2 = newInput(rule.ignoreText);
+            input2.addEventListener("change", () => {
+                dt.setRule(catagorie.index, i, rule.matchText, input2.value);
+                reload(false);
+            });
+            row.appendChild(input2);
+            //knapp
+            const button = newButton("Remove");
+            button.addEventListener("click", () => {
+                dt.removeRule(catagorie.index, i);
+                reload(false);
+            });
+            row.appendChild(button);
+
+            categorieListContainer.appendChild(row);
+        });
+        //button
+        const button = newButton("Add catagorie rule");
+        button.addEventListener("click", () => {
+            dt.addRule(catagorie.index,"","");
+            reload(false);
+        });
+        categorieListContainer.appendChild(button);
+
+        //line
+        const line = document.createElement("hr");
+        line.style.width = "50%";
+        categorieListContainer.appendChild(line);
+
     }
+    const button = newButton("Add catagorie");
+    button.addEventListener("click", () => {
+        dt.newCategorie();
+        reload(false);
+    });
+    categorieListContainer.appendChild(button);
 }
 
-function ignoreRule(i) {
-    let ignored = dt.getExcludeRules()[i][2];
-    if (ignored){
-        dt.getExcludeRules()[i][2] = false;
-    } else {
-        dt.getExcludeRules()[i][2] = true;
-    }
-    reload(false);
-}*/
+function newTitle(text) {
+    const title = document.createElement("h4");
+    title.textContent = text;
+    return title;
+
+}
+
+function newButton(text) {
+    const button = document.createElement("button");
+    button.textContent = text;
+    return button;
+}
+
+function newInput(value) {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = value;
+    input.classList.add("kursRuta");
+    return input;
+}
+
+function newLable(text) {
+    const label = document.createElement("label");
+    label.textContent = text;
+    label.classList.add("lableSize");
+    return label;
+}
+
+function newInfo(text) {
+    const info = document.createElement("span");
+    info.className = "info";
+    info.textContent = "i";
+    const tooltip = document.createElement("span");
+    tooltip.className = "tooltip";
+    tooltip.textContent = text;
+    info.appendChild(tooltip);
+    return info;
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
     createCalendar();
-
-    const corseListContainer = document.getElementById("courseList");
-    corseListContainer.addEventListener("change", (event) => {
-        if (event.target.id.startsWith("input")) {
-            const course = dt.getCourses()[event.target.id.slice(5)]
-            if (course) {
-                course.customName = event.target.value;
-                reload(false);
-            }
-        } 
-    });
     document.getElementById("LoadCalBtn").addEventListener("click", loadCalSorce);
 });
