@@ -55,22 +55,29 @@ function filterCal(isServer){
     const events = dt.getEvents(isServer);
     let remainingEvents  = structuredClone(events);
     const categories = dt.getCategories();
+
     for (const categorie of categories) {
         const rules = dt.getDeformattedRules(categorie.index);
-        for (const rule of rules) {
-            if (rule.matchText != "") {
-                for (const event of remainingEvents.values()) {
-                    const eventText = (event.description + event.summary).toLocaleLowerCase();
 
-                    if (eventText.includes(rule.matchText) && !eventText.includes(rule.ignoreText)){
-                        remainingEvents.delete(event.id);
-                        events.get(event.id).categorie = categorie.index;
-                    } else {
-                        events.get(event.id).categorie = 0;
-                    }
-                }
+        for (const rule of rules) {
+
+            if (rule.matchText == "") continue;
+
+            for (const event of remainingEvents.values()) {
+                const eventText = (event.summary + event.description).toLocaleLowerCase();
+                
+                if (eventText.includes(rule.matchText) && (rule.ignoreText == "" || !eventText.includes(rule.ignoreText))){
+                    remainingEvents.delete(event.id);
+                    events.get(event.id).categorie = categorie.index;
+                    console.log(eventText +"\n"+events.get(event.id).categorie)
+                } 
             }
+            
         }
+    }
+
+    for (const event of remainingEvents.values()) {
+        events.get(event.id).categorie = 1;
     }
 }
 

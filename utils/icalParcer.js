@@ -43,7 +43,7 @@ export function parceIcs(ics = "") {
         event["description"] = unescapeICS(ics, pos + 12, nextPos - 2);
         pos = nextPos;
 
-        event["categorie"] = 0;
+        event["categorie"] = 1;
 
         events.push(event);
     }

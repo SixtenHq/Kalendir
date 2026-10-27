@@ -13,6 +13,7 @@ let calendar;
 export async function reload(doImport) {
     await updateCal(doImport);
     reloadCourseList();
+    reloadExcludeList();
     //reloadRulesList()
     updateCalView();
 }
@@ -64,10 +65,8 @@ function createCalendar() {
                 if (event.categorie >= categories.length) event.categorie = 0;
 
                 calBox.setProp("color", categories[event.categorie].colour);
-                if (event.categorie == 1) calBox.setProp("className", "striped-event");
-                else calBox.setProp("className", "");
-                
-            
+                if (event.categorie == 0) calBox.setProp("className", "striped-event");
+                else calBox.setProp("className", "");                
             }           
         }
     );
@@ -78,15 +77,27 @@ function createCalendar() {
 function updateCalView() {
     calendar.removeAllEvents();
     const events = dt.getEvents();
-    for (var event of events.values()) {
-        calendar.addEvent({
+    const categories = dt.getCategories();
+
+    for (const event of events.values()) {
+        const calEvent = {
             title: event.summary,
             start: event.start,
             end: event.end,
-            id: event.id
-        });
+            id: event.id,
+            color: categories[event.categorie].colour
+        };
+
+        if (event.categorie == 0) {
+            calEvent.className = "striped-event";
+        } else {
+            calEvent.className = "";
+        }
+
+        calendar.addEvent(calEvent);
     }
 }
+
 
 // ------------------ Curslistan -------------------
 
@@ -147,6 +158,71 @@ function ignoreCourse(courseCode) {
         course.ignored = true;
     }
     reload(false);
+}
+
+
+function reloadExcludeList() {
+    const excludeListContainer = document.getElementById("excludeList");
+    excludeListContainer.innerHTML = "";
+    const excludeIndex = 0;
+    const rules = dt.getRules(excludeIndex);
+
+    rules.forEach((rule, i) => {
+        const row = document.createElement("div");
+        row.classList.add("courseRow")
+        //lable
+        const label = document.createElement("label");
+        label.textContent = "Exclude if contains:";
+        label.classList.add("lableSize");
+        row.appendChild(label);
+        //input fält
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = rule.matchText;
+        input.classList.add("kursRuta");
+        input.addEventListener("change", () => {
+            dt.setRule(excludeIndex, i, input.value, rule.ignoreText);
+            reload(false);
+        });
+        row.appendChild(input);
+        //lable
+        const label2 = document.createElement("label");
+        label2.textContent = "But not if contains:";
+        label2.classList.add("lableSize");
+        row.appendChild(label2);
+        //input fält
+        const input2 = document.createElement("input");
+        input2.type = "text";
+        input2.value = rule.ignoreText;
+        input2.classList.add("kursRuta");
+        input2.addEventListener("change", () => {
+            dt.setRule(excludeIndex, i, rule.matchText, input2.value);
+            reload(false);
+        });
+        row.appendChild(input2);
+        //knapp
+        const button = document.createElement("button");
+        button.textContent = "Remove";
+        button.addEventListener("click", () => {
+            dt.removeRule(excludeIndex, i);
+            reload(false);
+        });
+        row.appendChild(button);
+
+        excludeListContainer.appendChild(row);
+    });
+    const button = document.createElement("button");
+    button.textContent = "Add exclusion rule";
+    button.addEventListener("click", () => {
+        dt.addRule(excludeIndex,"","");
+        reload(false);
+    });
+    excludeListContainer.appendChild(button);
+}
+
+function reloadCategoriesList() {
+
+
 }
 
 // ------------------ Rules -------------------

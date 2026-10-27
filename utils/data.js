@@ -24,23 +24,24 @@ let sessionData =
     categories: [
         {
             index: 0,
-            name: "default",
-            colour: "yellow",
+            name: "hidden",
+            colour: "gray",
             rules: [{
-                matchText: "",
+                matchText: "objekt",
                 ignoreText: "",
             }]
         },
         {
             index: 1,
-            name: "hidden",
-            colour: "gray",
+            name: "default",
+            colour: "",
             rules: [{
-                matchText: "dialog",
+                matchText: "",
                 ignoreText: "",
             }]
         }
-    ]
+    ],
+    email: ""
 };
 
 export function exportData() {
@@ -188,11 +189,18 @@ export function getDeformattedRules(catagory) {
     return rules;
 }
 
-export function addRule(catagory, matchText, ignoreText = "") {
+export function addRule(catagory, matchText, ignoreText) {
     sessionData.categories[catagory].rules.push({
         matchText: matchText,
         ignoreText: ignoreText
     });
+}
+
+export function setRule(catagory, i, matchText, ignoreText) {
+    sessionData.categories[catagory].rules[i] = {
+        matchText: matchText,
+        ignoreText: ignoreText
+    };
 }
 
 export function removeRule(catagory,i) {
