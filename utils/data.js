@@ -79,7 +79,7 @@ export function importData(importedData) {
 export function getIcs(categorieIndex) {
     const categorie = sessionData.categories[categorieIndex];
 
-    tempHeader = structuredClone(header);
+    const tempHeader = structuredClone(header);
     tempHeader.name = categorie.name;
     const ics = ical(tempHeader);
 

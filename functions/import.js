@@ -5,6 +5,7 @@ export async function onRequest(context) {
     const env = context.env;
     const url = new URL(context.request.url);
     const id = url.searchParams.get("id");
+    const categorie = url.searchParams.get("categorie");
 
     const date = new Date().toLocaleTimeString("sv-SE", {
         timeZone: "Europe/Stockholm",
@@ -30,7 +31,7 @@ export async function onRequest(context) {
     const data = JSON.parse(result.data);
     dt.importData(data);
     await updateCal();
-    const ics = dt.getIcs();
+    const ics = dt.getIcs(categorie[0]);
 
     return new Response(ics, {
         headers: {
