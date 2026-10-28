@@ -28,6 +28,10 @@ body {
     width: 30%;
 }
 
+.lableSize2 {
+    width: 30%;
+}
+
 .courseRow {
     display: flex;
     align-items: center;
@@ -93,4 +97,5 @@ body {
     padding: 0;
     font: inherit;
     color: inherit;
+    width: 50%;
 }

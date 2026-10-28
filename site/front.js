@@ -373,6 +373,7 @@ function reloadSubLinkList() {
     const categories = dt.getCategories();
 
     for (const categorie of categories) {
+        if (categorie.index == 0) continue;
         const row = document.createElement("div");
         row.classList.add("courseRow")
 
