@@ -1,7 +1,6 @@
 import * as dt from "../utils/data.js";
 import { reload } from "./front.js";
 
-
 export async function uploadCal() {
     console.log("uppload start");
     console.log(dt.exportData());

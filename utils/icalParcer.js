@@ -44,6 +44,7 @@ export function parceIcs(ics = "") {
         pos = nextPos;
 
         event["categorie"] = 1;
+        event["locked"] = false;
 
         events.push(event);
     }

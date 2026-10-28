@@ -12,15 +12,16 @@ let calendar;
 
 export async function reload(doImport) {
     await updateCal(doImport);
+    reloadSourceList();
     reloadCourseList();
     reloadExcludeList();
     reloadCategorieList();
     updateCalView();
 }
 
-
 async function loadCalSorce() {
-    const CalSorceLink = document.getElementById("CalSorceTextfield").value;
+    const field = document.getElementById("CalSorceTextfield");
+    const CalSorceLink = field.value;
     
     if (!CalSorceLink.includes("cloud.timeedit.net/liu/web/schema")) {
         console.log("fel sorce link!");
@@ -30,7 +31,11 @@ async function loadCalSorce() {
         console.log("redan inlagd");
         return;
     }
-    dt.addSorce(CalSorceLink);
+    const date = new Date().toLocaleDateString("sv-SE", {
+    timeZone: "Europe/Stockholm"
+    });
+    dt.addSorce(CalSorceLink, date);
+    //field.value = "";
     
     reload(true);
 }
@@ -63,6 +68,9 @@ function createCalendar() {
                 event.categorie++;
                 const categories = dt.getCategories();
                 if (event.categorie >= categories.length) event.categorie = 0;
+                
+                if (event.categorie == 1) event.locked = false;
+                else event.locked = true;
 
                 calBox.setProp("color", categories[event.categorie].colour);
                 if (event.categorie == 0) calBox.setProp("className", "striped-event");
@@ -98,6 +106,38 @@ function updateCalView() {
     }
 }
 
+// ------------------- sorce list -------------------------------
+
+function reloadSourceList() {
+    const sourceListContainer = document.getElementById("sourceList");
+    sourceListContainer.innerHTML = "";
+
+    sourceListContainer.appendChild(newTitle("Sources"));
+    const sorces = dt.getSorces();
+
+    sorces.forEach((sorce, i) => {
+        const row = document.createElement("div");
+        row.classList.add("courseRow")
+
+        // lable
+        row.appendChild(newLable("Added " + sorce.time));
+        row.appendChild(newLable("Link: "));
+        const linkfield = newInput(sorce.link);
+        linkfield.readOnly = true;
+        linkfield.classList.add("readOnlyInput");
+        row.appendChild(linkfield);
+
+        // knapp
+        const button = newButton("Remove");
+        button.addEventListener("click", () => {
+            dt.removeSorce(i);
+            reload(true);
+        });
+        row.appendChild(button);
+        
+        sourceListContainer.appendChild(row);
+    });
+}
 
 // ------------------ Curslistan -------------------
 
@@ -255,7 +295,6 @@ function reloadCategorieList() {
                 reload(false);
             });
         startRow.appendChild(dropdown);
-        console.log(catagorie);
 
         //info
         startRow.appendChild(newInfo("The colors are only on this site, they will not be applied for your calendar"));

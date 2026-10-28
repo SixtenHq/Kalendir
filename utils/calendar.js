@@ -20,7 +20,8 @@ async function importCal() {
     const pastEvents = dt.getPastEvents();
     
     //import new events
-    for (const link of sorces) {
+    for (const sorce of sorces) {
+        const link = sorce.link;
         time.pause();
         const response = await fetch(link);
         const ics = await response.text();
@@ -64,12 +65,16 @@ function filterCal(isServer){
             if (rule.matchText == "") continue;
 
             for (const event of remainingEvents.values()) {
+                if (event.locked) {
+                    remainingEvents.delete(event.id);
+                    continue;
+                }
                 const eventText = (event.summary + event.description).toLocaleLowerCase();
                 
                 if (eventText.includes(rule.matchText) && (rule.ignoreText == "" || !eventText.includes(rule.ignoreText))){
                     remainingEvents.delete(event.id);
                     events.get(event.id).categorie = categorie.index;
-                    console.log(eventText +"\n"+events.get(event.id).categorie)
+                    //console.log(eventText +"\n"+events.get(event.id).categorie)
                 } 
             }
             
@@ -83,15 +88,22 @@ function filterCal(isServer){
 
 function format(isServer) {
     const events = dt.getEvents(isServer);
+    let foundCourses = [];
     for (let [id, event] of events) {
         if (!isEdited(event)) {
             event.description = "Orginal title: " + event.summary + "\n" + event.description;
         }
-        formatSummary(event);
+        foundCourses = formatSummary(event, foundCourses);
+    }
+    const courses = dt.getCourses();
+    for (const courseCode of Object.keys(courses)) {
+        if (!foundCourses.includes(courseCode)) {
+            dt.removeCourse(courseCode);
+        }
     }
 }
 
-function formatSummary(event) {
+function formatSummary(event, foundCourses) {
     const descriptionParts = event.description.split("\n");
     let summaryParts;
     if (isEdited(event)) {
@@ -107,6 +119,7 @@ function formatSummary(event) {
     for (const part of descriptionParts) {
         if (part.startsWith("Kurs: ")) {
             const courseCode = summaryParts[i]; // get coresponding corse code
+            if (!foundCourses.includes(courseCode)) foundCourses.push(courseCode);
             const savedCourse = dt.getCourse(courseCode);
             if (savedCourse) {
                 if (savedCourse.ignored) {
@@ -135,6 +148,7 @@ function formatSummary(event) {
         //console.log(descriptionParts);
         event.summary = summaryParts.join(" ");
     }       
+    return foundCourses;
 }
 
 function isEdited(event) {

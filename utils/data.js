@@ -11,7 +11,10 @@ const header =
 let sessionData =
 {
     userId: null,
-    sorces: [],
+    sorces: [
+        //link:
+        //time:
+    ],
     courses: {
         // code: {
         //      name: 
@@ -124,12 +127,22 @@ export function getSorces() {
     return sessionData.sorces;
 }
 
-export function addSorce(source) {
-    sessionData.sorces.push(source);
+export function addSorce(source, date) {
+    sessionData.sorces.push({
+        link: source,
+        time: date
+    });
 }
 
-export function sorcesIncludes(source) {
-    return sessionData.sorces.includes(source);
+export function sorcesIncludes(insource) {
+    for (const sorce of sessionData.sorces) {
+        if (sorce.link == insource) return true;
+    }
+    return false;
+}
+
+export function removeSorce(i) {
+    sessionData.sorces.splice(i, 1);
 }
 
 // ---------- Courses ----------
@@ -146,6 +159,10 @@ export function addCourse(courseCode, name) {
         name: name,
         ignored: false
     };
+}
+
+export function removeCourse(courseCode) {
+    delete sessionData.courses[courseCode];
 }
 
 // ---------- Categories ----------

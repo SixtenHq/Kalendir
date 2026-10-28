@@ -85,3 +85,12 @@ body {
 .info:hover .tooltip {
     display: block;
 }
+
+.readOnlyInput {
+    background-color: #e0e0e0;
+    color: #666;
+    cursor: default;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+}
