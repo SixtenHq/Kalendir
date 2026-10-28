@@ -17,6 +17,7 @@ export async function reload(doImport) {
     reloadExcludeList();
     reloadCategorieList();
     updateCalView();
+    reloadSubLinkList()
 }
 
 async function loadCalSorce() {
@@ -362,6 +363,30 @@ function reloadCategorieList() {
         reload(false);
     });
     categorieListContainer.appendChild(button);
+}
+
+function reloadSubLinkList() {
+    const subLinkListContainer = document.getElementById("subLinkList");
+    subLinkListContainer.innerHTML = "";
+
+    subLinkListContainer.appendChild(newTitle("Subscription links"));
+    const categories = dt.getCategories();
+
+    for (const categorie of categories) {
+        const row = document.createElement("div");
+        row.classList.add("courseRow")
+
+        row.appendChild(newLable(categorie.name));
+        row.appendChild(newLinkField(dt.getSubLink(categorie.index)));
+        subLinkListContainer.appendChild(row);
+    }
+}
+
+function newLinkField(value){
+    const linkfield = newInput(value);
+    linkfield.readOnly = true;
+    linkfield.classList.add("readOnlyInput");
+    return linkfield;
 }
 
 function newTitle(text) {

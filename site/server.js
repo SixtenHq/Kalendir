@@ -3,24 +3,13 @@ import { reload } from "./front.js";
 
 export async function uploadCal() {
     console.log("uppload start");
-    console.log(dt.exportData());
-    console.log(dt.DataToString());
 
-    if (!dt.getUserId()) {
-        dt.setUserId(crypto.randomUUID());
-        console.log("new id: " + dt.getUserId());
-    } 
+    dt.makeSubLinks();
+    reload();
 
     var packet = JSON.stringify({
-        id: dt.getUserId(),
         data: dt.exportData()
     })
-
-    const url = new URL("https://kalendir.pages.dev/import");
-    url.searchParams.set("id", dt.getUserId());
-    console.log(url.toString());
-    document.getElementById("kalendirLinkLabel").textContent = url.toString();
-
 
     const response = await fetch("/onPageWorker", {
         method: "POST",

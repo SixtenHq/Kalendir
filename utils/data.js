@@ -24,6 +24,7 @@ let sessionData =
     },
     futureEvents: new Map(),
     pastEvents: new Map(),
+    subLinks: [],
     categories: [
         {
             index: 0,
@@ -75,13 +76,16 @@ export function importData(importedData) {
     sessionData = tempSessionData;
 }
 
-export function getIcs(categorieName) {
+export function getIcs(categorieIndex) {
+    const categorie = sessionData.categories[categorieIndex];
+
     tempHeader = structuredClone(header);
-    tempHeader.name = categorieName;
+    tempHeader.name = categorie.name;
     const ics = ical(tempHeader);
+
     const events = getEvents(false);
     for (const [id, event] of events) {
-        if (event.categorie == categorieName) {
+        if (event.categorie == categorieIndex) {
             ics.createEvent(event);
         }
     }
@@ -121,6 +125,30 @@ export function setFutureEvents(events) {
 export function setPastEvents(events) {
     sessionData.pastEvents = events;
 }
+
+
+// ----------------- subscriptionLinks --------------
+export function makeSubLinks() {
+    if (!sessionData.id) {
+        setUserId(crypto.randomUUID());
+    }
+
+    sessionData.subLinks = [];
+    for (const categorie of sessionData.categories){
+        const url = new URL("https://kalendir.pages.dev/import");
+        url.searchParams.set("categorie", categorie.index + categorie.name);
+        url.searchParams.set("id", getUserId());
+        sessionData.subLinks.push(url.toString());
+    }
+}
+
+export function getSubLink(i) {
+    for (const sublink of sessionData.subLinks) {
+        if (sublink.includes("categorie=" + i)) return sublink;
+    }
+    return null;
+}
+
 
 // ---------- Sorces ----------
 export function getSorces() {
