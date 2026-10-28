@@ -8,6 +8,7 @@ export async function uploadCal() {
     reload();
 
     var packet = JSON.stringify({
+        id: dt.getUserId(),
         data: dt.exportData()
     })
 
