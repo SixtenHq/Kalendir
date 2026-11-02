@@ -2,14 +2,12 @@ import * as dt from "./data.js";
 import * as time from "./time.js";
 import { parceIcs } from "./icalParcer.js";
 
-
 export async function updateCal(doImport, isServer = false) {
     time.start();
     if (doImport) await importCal();
     filterCal(isServer);
     format(isServer);
     time.end();
-    
 }
 
 async function importCal() {
@@ -45,8 +43,8 @@ async function importCal() {
     // spara gamla event
     const currentTime = Date.now();
     for (const [id, event] of savedEvents) {
-        if (!newEventList.get(event.id) && event.start < currentTime) {
-            pastEvents.set(event.id, event);
+        if (!newEventList.get(id) && event.start < currentTime) {
+            pastEvents.set(id, event);
         }
     }
     dt.setFutureEvents(newEventList);

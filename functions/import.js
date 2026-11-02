@@ -30,7 +30,7 @@ export async function onRequest(context) {
 
     const data = JSON.parse(result.data);
     dt.importData(data);
-    await updateCal();
+    await updateCal(true, true);
     const ics = dt.getIcs(categorie[0]);
 
     return new Response(ics, {
