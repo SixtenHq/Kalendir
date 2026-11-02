@@ -44,7 +44,7 @@ async function importCal() {
     }    
     // spara gamla event
     const currentTime = Date.now();
-    for (const event of savedEvents) {
+    for (const [id, event] of savedEvents) {
         if (!newEventList.get(event.id) && event.start < currentTime) {
             pastEvents.set(event.id, event);
         }
