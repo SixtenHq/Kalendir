@@ -23,5 +23,10 @@
   "homepage": "https://github.com/SixtenHq/Kalendir#readme",
   "devDependencies": {
     "vite": "^8.3.8"
+  },
+  "dependencies": {
+    "fullcalendar": "^7.1.5",
+    "ical-generator": "^11.1.4",
+    "temporal-polyfill": "^1.0.8"
   }
 }
