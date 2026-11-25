@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kalendir</title>
+
+  <script type="module" crossorigin src="/assets/index--ZLRX2g3.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BfTnUiHD.css">
+</head>
+
+<body> 
+
+    <div class="box">
+
+        <h2>Kalendir Alpha</h2>
+        Välkomen till din nya fina kalender!
+        
+        <br><br>
+
+        <span class="info">
+            i
+            <span class="tooltip">Add a subsription link from TimeEdit to get started, you can add several</span>
+        </span>
+        <label for="CalSorceTextfield">TimeEdit iCal länk:</label>
+        <input type="text" id="CalSorceTextfield" value="https://cloud.timeedit.net/liu/web/schema/ri667XQ1622Z55Qm2Z0506Z6y6YQ805n6Y95Y0gQ20.ics">
+        <button id="LoadCalBtn">Lägg till kalender</button>
+        
+        <br><br>
+
+        <span class="info">
+            i
+            <span class="tooltip">Add a link you got from Kalendir to continue edeting it</span>
+        </span>
+        <label for="InternalCalTextField">Kalendir länk:</label>
+        <input type="text" id="InternalCalTextField" value="">
+        <button id="InternalCalBtn">Hämta kalender</button>
+        
+        <br><hr><br>
+
+        <div id="sourceList"></div>
+
+        <br><hr><br>
+
+        <div id="courseList"></div>
+
+        <br><hr><br>
+        
+        <div id="excludeList"></div>
+
+        <br><hr><br>
+
+        <div id="categorieList"></div>
+
+        <br><hr><br>
+
+        <div id="subLinkList"></div>
+
+        <br><hr><br>
+
+        <button id="uploadBtn">Spara</button>
+        <br>
+        <label id="kalendirLinkLabel"></label>
+
+        <br><hr><br>
+
+        <div id="calendar"></div>
+
+    </div>
+
+
+    <!-- Kopplar in JavaScript-filen -->
+
+</body>
+</html>

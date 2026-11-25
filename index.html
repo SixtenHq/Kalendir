@@ -6,8 +6,7 @@
 
     <title>Kalendir</title>
 
-    <link rel="stylesheet" href="Kalendir/style.css">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body> 
@@ -24,7 +23,7 @@
             <span class="tooltip">Add a subsription link from TimeEdit to get started, you can add several</span>
         </span>
         <label for="CalSorceTextfield">TimeEdit iCal länk:</label>
-        <input type="text" id="CalSorceTextfield" value="">
+        <input type="text" id="CalSorceTextfield" value="https://cloud.timeedit.net/liu/web/schema/ri667XQ1622Z55Qm2Z0506Z6y6YQ805n6Y95Y0gQ20.ics">
         <button id="LoadCalBtn">Lägg till kalender</button>
         
         <br><br>
@@ -71,9 +70,8 @@
 
 
     <!-- Kopplar in JavaScript-filen -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@7.1.0/all/global.js"></script>
-    <script type="module" src="Kalendir/site/front.js"></script>
-    <script type="module" src="Kalendir/site/server.js"></script>
+    <script type="module" src="./site/front.js"></script>
+    <script type="module" src="./site/server.js"></script>
 
 </body>
 </html>

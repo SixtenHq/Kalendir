@@ -1,12 +1,9 @@
 import { updateCal } from "../utils/calendar.js";
 import * as dt from "../utils/data.js";
-import { Calendar } from 'fullcalendar';
-import timeGridPlugin from 'fullcalendar/timegrid';
-import classicThemePlugin from "fullcalendar/themes/classic";
+//import { Calendar } from 'fullcalendar';
+//import timeGridPlugin from 'fullcalendar/timegrid';
+//import classicThemePlugin from "fullcalendar/themes/classic";
 
-import "fullcalendar/skeleton.css";
-import "fullcalendar/themes/classic/theme.css";
-import "fullcalendar/themes/classic/palette.css";
 
 let calendar;
 
